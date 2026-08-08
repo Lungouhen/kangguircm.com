@@ -1,10 +1,16 @@
 ```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+
 # Dependencies
+vendor/
 node_modules/
 
-# Build artifacts
-dist/
-build/
+# Logs and temp files
+*.log
+*.tmp
+*.swp
 
 # Environment
 .env
@@ -15,37 +21,17 @@ build/
 .vscode/
 .idea/
 
-# Logs
-*.log
-
-# Python cache (if present)
-__pycache__/
-*.pyc
-
-# Temporary files
-*.tmp
-*.swp
-
-# OS files
+# OS generated files
 .DS_Store
 Thumbs.db
 
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
-.coverage
+*.coverage
 
-# Testing
-.mypy_cache/
-.pytest_cache/
-
-# Gradle
-.gradle/
-
-# Target (Rust, etc.)
+# Build directories
+dist/
+build/
 target/
-
-# Virtual environments
-.venv/
-venv/
 ```
