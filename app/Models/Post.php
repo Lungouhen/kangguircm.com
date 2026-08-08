@@ -52,7 +52,7 @@ class Post extends Model
             ->where('published_at', '<=', now());
     }
 
-    public function scopeDraft($query)
+    public static function scopeDraft($query)
     {
         return $query->where('status', self::STATUS_DRAFT);
     }
