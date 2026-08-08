@@ -86,9 +86,3 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::delete('/{user}', [App\Http\Controllers\UserController::class, 'destroy'])->name('destroy');
     });
 });
-
-// SEO Routes - Sitemap & Robots
-Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index']);
-Route::get('/robots.txt', function() {
-    return response()->file(public_path('robots.txt'));
-});
