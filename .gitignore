@@ -1,16 +1,51 @@
-/vendor/
-/node_modules/
-/public/hot
-/public/storage
-/storage/*.key
+```
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+
+# Environment
 .env
-.env.backup
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
-/.fleet
-/.idea
-/.vscode
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Python cache (if present)
+__pycache__/
+*.pyc
+
+# Temporary files
+*.tmp
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Testing
+.mypy_cache/
+.pytest_cache/
+
+# Gradle
+.gradle/
+
+# Target (Rust, etc.)
+target/
+
+# Virtual environments
+.venv/
+venv/
+```
