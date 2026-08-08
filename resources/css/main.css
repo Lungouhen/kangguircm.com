@@ -1,0 +1,22 @@
+/* ==========================================================================
+   Main CSS Entry Point
+   KangGui RCM SaaS Platform
+   ========================================================================== */
+
+/* Import order: variables → custom-media → base → layout → components → utilities */
+
+/* Design tokens and custom media */
+@import 'variables.css';
+@import 'custom-media.css';
+
+/* Base styles (reset, typography, forms) */
+@import 'base/reset.css';
+
+/* Layout components (grid, flex, header, sidebar, main) */
+@import 'layout/layout.css';
+
+/* UI Components (buttons, cards, forms, navigation, badges, alerts) */
+@import 'components/components.css';
+
+/* Utilities (spacing, colors, display) */
+@import 'utilities/utilities.css';
