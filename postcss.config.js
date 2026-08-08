@@ -4,6 +4,7 @@ module.exports = {
   map: process.env.NODE_ENV !== 'production' ? { inline: false } : false,
   plugins: [
     require('postcss-import'),
+    require('tailwindcss'),
     require('postcss-preset-env')({
       stage: 2,
       features: {
