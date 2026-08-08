@@ -22,21 +22,23 @@ Route::get('/blog/{slug}', [App\Http\Controllers\Cms\PostController::class, 'sho
 // Public Pages
 Route::get('/page/{slug}', [App\Http\Controllers\Cms\PageController::class, 'show'])->name('page.show');
 
-// Authentication Routes (to be implemented with Laravel Breeze/Jetstream)
-// Route::middleware('guest')->group(function () {
-//     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-//     Route::post('/login', [AuthController::class, 'login']);
-//     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-//     Route::post('/register', [AuthController::class, 'register']);
-// });
+// Authentication Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+    Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+});
 
 // Protected Dashboard Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // CMS Module Routes
     Route::prefix('cms')->name('cms.')->group(function () {
