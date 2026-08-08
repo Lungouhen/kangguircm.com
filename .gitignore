@@ -1,51 +1,29 @@
 ```
 # Dependencies
-node_modules/
-
-# Environment variables
-.env
-
-# Build artifacts and temporary files
-*.map
-*.min.js
-*.min.css
-dist/
-build/
-coverage/
-*.tmp
-*.temp
-
-# Editor and IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# System files
-.DS_Store
-Thumbs.db
+vendor/
 
 # Logs
 *.log
 
-# Compressed files
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
+# Environment
+.env
+.env.local
+.env.*
 
+# Cache
+.cache/
+.phpunit.result.cache
+
+# Compiled and build artifacts
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.exe
+*.out
+
+# Distribution
+dist/
+build/
 ```
