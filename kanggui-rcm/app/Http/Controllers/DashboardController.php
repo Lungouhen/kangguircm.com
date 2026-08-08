@@ -16,42 +16,24 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $user = request()->user();
+        $user = auth()->user();
+        
+        // Aggregate statistics based on user role
+        $stats = [
+            'posts_count' => Post::count(),
+            'posts_views' => Post::sum('views'),
+            'subscribers_count' => Subscriber::where('is_active', true)->count(),
+            'campaigns_sent' => Campaign::where('status', 'sent')->count(),
+            'employees_count' => Employee::where('is_active', true)->count(),
+            'pending_leaves' => LeaveRequest::where('status', 'pending')->count(),
+            'today_attendance' => Attendance::whereDate('clock_in', today())->count(),
+        ];
 
-        // CMS Stats
-        $totalPosts = Post::count();
-        $publishedPosts = Post::where('status', 'published')->count();
-        $totalViews = Post::sum('view_count');
+        // Recent activity
+        $recentPosts = Post::with('author')->latest()->limit(5)->get();
+        $recentCampaigns = Campaign::latest()->limit(5)->get();
+        $pendingLeaves = LeaveRequest::with('employee.user')->where('status', 'pending')->latest()->limit(5)->get();
 
-        // Email Stats
-        $totalSubscribers = Subscriber::count();
-        $totalCampaigns = Campaign::count();
-        $sentCampaigns = Campaign::where('status', 'sent')->count();
-
-        // HRM Stats
-        $totalEmployees = Employee::count();
-        $pendingLeaves = LeaveRequest::where('status', 'pending')->count();
-        $todayAttendance = Attendance::whereDate('check_in', today())->count();
-
-        // Recent Activity
-        $recentPosts = Post::latest()->limit(5)->get(['id', 'title', 'status', 'created_at']);
-        $recentLeaves = LeaveRequest::with('employee.user')
-            ->latest()
-            ->limit(5)
-            ->get(['id', 'employee_id', 'leave_type', 'status', 'created_at']);
-
-        return view('admin.dashboard', compact(
-            'totalPosts',
-            'publishedPosts',
-            'totalViews',
-            'totalSubscribers',
-            'totalCampaigns',
-            'sentCampaigns',
-            'totalEmployees',
-            'pendingLeaves',
-            'todayAttendance',
-            'recentPosts',
-            'recentLeaves'
-        ));
+        return view('dashboard', compact('stats', 'recentPosts', 'recentCampaigns', 'pendingLeaves'));
     }
 }

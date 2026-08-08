@@ -6,70 +6,96 @@ namespace App\Repositories;
 
 use App\Models\Campaign;
 use App\Models\Subscriber;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CampaignRepository
 {
+    public function getAll(): Collection
+    {
+        return Campaign::with('template')->latest()->get();
+    }
+
+    public function find(int $id): ?Campaign
+    {
+        return Campaign::with(['template', 'lists.subscribers'])->find($id);
+    }
+
     public function create(array $data): Campaign
     {
-        return Campaign::create([
-            'name' => $data['name'],
-            'subject' => $data['subject'],
-            'content' => $data['content'],
-            'template_id' => $data['template_id'] ?? null,
-            'status' => $data['scheduled_at'] ? 'scheduled' : 'draft',
-            'scheduled_at' => $data['scheduled_at'] ?? null,
-        ]);
-    }
-
-    public function sendCampaign(Campaign $campaign, array $listIds): void
-    {
-        $subscribers = Subscriber::whereIn('id', function ($query) use ($listIds) {
-            $query->select('subscriber_id')
-                ->from('list_subscriber')
-                ->whereIn('subscriber_list_id', $listIds);
-        })->where('is_verified', true)
-          ->where('is_bounced', false)
-          ->get();
-
-        $campaign->update(['status' => 'sending']);
-
-        foreach ($subscribers as $subscriber) {
-            // Simulate sending - in production use queue job
-            Mail::raw($campaign->content, function ($message) use ($subscriber, $campaign) {
-                $message->to($subscriber->email)
-                        ->subject($campaign->subject);
-            });
-
-            $campaign->emailTracking()->create([
-                'subscriber_id' => $subscriber->id,
-                'sent_at' => now(),
-                'status' => 'sent',
+        return DB::transaction(function () use ($data) {
+            $campaign = Campaign::create([
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'content' => $data['content'],
+                'email_template_id' => $data['template_id'] ?? null,
+                'status' => $data['scheduled_at'] ? 'scheduled' : 'draft',
+                'scheduled_at' => $data['scheduled_at'] ?? null,
             ]);
-        }
 
-        $campaign->update([
-            'status' => 'sent',
+            if (isset($data['list_ids'])) {
+                $campaign->lists()->attach($data['list_ids']);
+            }
+
+            return $campaign;
+        });
+    }
+
+    public function send(Campaign $campaign): bool
+    {
+        return DB::transaction(function () use ($campaign) {
+            // Get all subscribers from selected lists
+            $subscribers = Subscriber::whereHas('lists', function ($query) use ($campaign) {
+                $query->whereIn('subscriber_lists.id', $campaign->lists->pluck('id'));
+            })
+            ->where('is_active', true)
+            ->where('is_verified', true)
+            ->get();
+
+            $sentCount = 0;
+            foreach ($subscribers as $subscriber) {
+                // Simulate sending email (in production, dispatch a job)
+                $this->sendEmail($campaign, $subscriber);
+                $sentCount++;
+            }
+
+            $campaign->update([
+                'status' => 'sent',
+                'sent_count' => $sentCount,
+                'sent_at' => now(),
+            ]);
+
+            return true;
+        });
+    }
+
+    protected function sendEmail(Campaign $campaign, Subscriber $subscriber): void
+    {
+        // In production, this would dispatch a job to send via SMTP/API
+        // For now, we just track that it was "sent"
+        DB::table('email_tracking')->insert([
+            'campaign_id' => $campaign->id,
+            'subscriber_id' => $subscriber->id,
             'sent_at' => now(),
-            'total_sent' => $subscribers->count(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 
-    public function getStats(Campaign $campaign): array
+    public function trackOpen(int $trackingId): void
     {
-        $tracking = $campaign->emailTracking();
-        
-        return [
-            'sent' => $tracking->whereNotNull('sent_at')->count(),
-            'opened' => $tracking->whereNotNull('opened_at')->count(),
-            'clicked' => $tracking->whereNotNull('clicked_at')->count(),
-            'bounced' => $tracking->where('status', 'bounced')->count(),
-            'open_rate' => $tracking->count() > 0 
-                ? round(($tracking->whereNotNull('opened_at')->count() / $tracking->count()) * 100, 2) 
-                : 0,
-            'click_rate' => $tracking->count() > 0 
-                ? round(($tracking->whereNotNull('clicked_at')->count() / $tracking->count()) * 100, 2) 
-                : 0,
-        ];
+        DB::table('email_tracking')
+            ->where('id', $trackingId)
+            ->update(['opened_at' => now()]);
+    }
+
+    public function trackClick(int $trackingId, string $url): void
+    {
+        DB::table('email_tracking')
+            ->where('id', $trackingId)
+            ->update([
+                'clicked_at' => now(),
+                'click_url' => $url,
+            ]);
     }
 }

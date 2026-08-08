@@ -6,15 +6,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm(): View
+    public function show(): View
     {
         return view('auth.register');
     }
@@ -27,20 +28,19 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Get default employee role
+        $employeeRole = Role::where('name', 'employee')->firstOrFail();
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role_id' => $employeeRole->id,
+            'is_active' => true,
         ]);
-
-        // Assign default role (employee)
-        $user->role()->associate(
-            \App\Models\Role::where('name', 'employee')->first()
-        );
-        $user->save();
 
         Auth::login($user);
 
-        return redirect()->route('admin.dashboard');
+        return redirect()->intended(route('dashboard'));
     }
 }
