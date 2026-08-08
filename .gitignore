@@ -1,34 +1,53 @@
 ```
 # Dependencies
-node_modules/
+vendor/
 
-# Environment variables
+# Environment
 .env
-
-# Build artifacts and temporary files
-*.map
-*.min.js
-*.min.css
-dist/
-build/
-coverage/
-*.tmp
-*.temp
-
-# Editor and IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# System files
-.DS_Store
-Thumbs.db
+.env.local
+.env.*
 
 # Logs
 *.log
 
-# Compressed files
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Testing
+.phpunit.result.cache
+
+# IDE
+.vscode/
+.idea/
+
+# Laravel specific
+bootstrap/cache/
+storage/
+public/storage
+
+# Composer
+composer.phar
+composer.lock
+
+# PHP
+*.php~
+*.swp
+
+# Cache
+.cache/
+.ccache/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build artifacts
+dist/
+build/
+target/
+
+# Compression
 *.zip
 *.gz
 *.tar
@@ -47,5 +66,9 @@ Thumbs.db
 *.Z
 *.lz
 *.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 
 ```
