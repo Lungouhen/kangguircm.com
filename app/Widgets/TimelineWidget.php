@@ -18,13 +18,7 @@ class TimelineWidget implements WidgetInterface
     {
         return [
             'label' => 'Timeline',
-            'fields' => [
-                'events' => ['type' => 'repeater', 'label' => 'Events', 'fields' => [
-                    'year' => ['type' => 'text', 'label' => 'Year/Date'],
-                    'title' => ['type' => 'text', 'label' => 'Title'],
-                    'description' => ['type' => 'textarea', 'label' => 'Description']
-                ]]
-            ]
+            'fields' => ['events' => ['type' => 'repeater', 'label' => 'Events', 'fields' => ['year' => 'Year', 'title' => 'Title', 'description' => 'Description']]]
         ];
     }
 

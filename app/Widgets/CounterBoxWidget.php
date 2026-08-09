@@ -6,29 +6,24 @@ class CounterBoxWidget implements WidgetInterface
 {
     public function identifier(): string
     {
-        return 'counter_box';
+        return 'counterbox';
     }
 
     public function label(): string
     {
-        return 'Counter Box';
+        return 'CounterBox';
     }
 
     public function config(): array
     {
         return [
-            'label' => 'Counter Box',
-            'fields' => [
-                'number' => ['type' => 'text', 'label' => 'Target Number'],
-                'prefix' => ['type' => 'text', 'label' => 'Prefix (e.g. +)'],
-                'suffix' => ['type' => 'text', 'label' => 'Suffix (e.g. %)'],
-                'label' => ['type' => 'text', 'label' => 'Description'],
-            ]
+            'label' => 'CounterBox',
+            'fields' => ['counters' => ['type' => 'repeater', 'label' => 'Counters', 'fields' => ['number' => 'Number', 'label' => 'Label', 'icon' => 'Icon Class']]]
         ];
     }
 
     public function render(array $data): string
     {
-        return view('public.widgets.counter_box', $data)->render();
+        return view('public.widgets.counterbox', $data)->render();
     }
 }

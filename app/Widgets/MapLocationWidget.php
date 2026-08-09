@@ -6,29 +6,24 @@ class MapLocationWidget implements WidgetInterface
 {
     public function identifier(): string
     {
-        return 'map_location';
+        return 'maplocation';
     }
 
     public function label(): string
     {
-        return 'Map Location';
+        return 'MapLocation';
     }
 
     public function config(): array
     {
         return [
-            'label' => 'Map Location',
-            'fields' => [
-                'address' => ['type' => 'text', 'label' => 'Address'],
-                'api_key' => ['type' => 'text', 'label' => 'Google Maps API Key'],
-                'zoom' => ['type' => 'number', 'label' => 'Zoom Level', 'default' => 15],
-                'height' => ['type' => 'text', 'label' => 'Height (e.g. 400px)', 'default' => '400px']
-            ]
+            'label' => 'MapLocation',
+            'fields' => ['api_key' => ['type' => 'text', 'label' => 'Google Maps API Key'], 'address' => ['type' => 'text', 'label' => 'Address'], 'height' => ['type' => 'number', 'label' => 'Height (px)']]
         ];
     }
 
     public function render(array $data): string
     {
-        return view('public.widgets.map_location', $data)->render();
+        return view('public.widgets.maplocation', $data)->render();
     }
 }

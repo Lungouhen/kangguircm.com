@@ -6,27 +6,24 @@ class VideoEmbedWidget implements WidgetInterface
 {
     public function identifier(): string
     {
-        return 'video_embed';
+        return 'videoembed';
     }
 
     public function label(): string
     {
-        return 'Video Embed';
+        return 'VideoEmbed';
     }
 
     public function config(): array
     {
         return [
-            'label' => 'Video Embed',
-            'fields' => [
-                'url' => ['type' => 'text', 'label' => 'Video URL (YouTube/Vimeo)'],
-                'autoplay' => ['type' => 'boolean', 'label' => 'Autoplay'],
-            ]
+            'label' => 'VideoEmbed',
+            'fields' => ['video_url' => ['type' => 'text', 'label' => 'Video URL (YouTube/Vimeo)'], 'autoplay' => ['type' => 'boolean', 'label' => 'Autoplay']]
         ];
     }
 
     public function render(array $data): string
     {
-        return view('public.widgets.video_embed', $data)->render();
+        return view('public.widgets.videoembed', $data)->render();
     }
 }

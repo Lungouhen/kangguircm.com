@@ -6,33 +6,24 @@ class TeamMemberWidget implements WidgetInterface
 {
     public function identifier(): string
     {
-        return 'team_member';
+        return 'teammember';
     }
 
     public function label(): string
     {
-        return 'Team Member';
+        return 'TeamMember';
     }
 
     public function config(): array
     {
         return [
-            'label' => 'Team Member',
-            'fields' => [
-                'name' => ['type' => 'text', 'label' => 'Name'],
-                'role' => ['type' => 'text', 'label' => 'Job Title'],
-                'image' => ['type' => 'image', 'label' => 'Photo'],
-                'bio' => ['type' => 'textarea', 'label' => 'Short Bio'],
-                'social_links' => ['type' => 'repeater', 'label' => 'Social Links', 'fields' => [
-                    'platform' => ['type' => 'text', 'label' => 'Platform'],
-                    'url' => ['type' => 'text', 'label' => 'URL']
-                ]]
-            ]
+            'label' => 'TeamMember',
+            'fields' => ['members' => ['type' => 'repeater', 'label' => 'Members', 'fields' => ['name' => 'Name', 'role' => 'Role', 'image' => 'Image URL', 'social_links' => 'JSON']]]
         ];
     }
 
     public function render(array $data): string
     {
-        return view('public.widgets.team_member', $data)->render();
+        return view('public.widgets.teammember', $data)->render();
     }
 }

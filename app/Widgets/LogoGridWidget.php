@@ -6,30 +6,24 @@ class LogoGridWidget implements WidgetInterface
 {
     public function identifier(): string
     {
-        return 'logo_grid';
+        return 'logogrid';
     }
 
     public function label(): string
     {
-        return 'Logo Grid';
+        return 'LogoGrid';
     }
 
     public function config(): array
     {
         return [
-            'label' => 'Logo Grid',
-            'fields' => [
-                'logos' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
-                    'image' => ['type' => 'image', 'label' => 'Logo Image'],
-                    'link' => ['type' => 'text', 'label' => 'Link URL'],
-                    'alt' => ['type' => 'text', 'label' => 'Alt Text']
-                ]]
-            ]
+            'label' => 'LogoGrid',
+            'fields' => ['logos' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => ['image' => 'Image URL', 'link' => 'Link URL']]]
         ];
     }
 
     public function render(array $data): string
     {
-        return view('public.widgets.logo_grid', $data)->render();
+        return view('public.widgets.logogrid', $data)->render();
     }
 }

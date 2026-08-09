@@ -18,12 +18,7 @@ class TabsWidget implements WidgetInterface
     {
         return [
             'label' => 'Tabs',
-            'fields' => [
-                'tabs' => ['type' => 'repeater', 'label' => 'Tabs', 'fields' => [
-                    'label' => ['type' => 'text', 'label' => 'Tab Label'],
-                    'content' => ['type' => 'textarea', 'label' => 'Content']
-                ]]
-            ]
+            'fields' => ['tabs' => ['type' => 'repeater', 'label' => 'Tabs', 'fields' => ['label' => 'Label', 'content' => 'Content']]]
         ];
     }
 

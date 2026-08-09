@@ -18,12 +18,7 @@ class AccordionWidget implements WidgetInterface
     {
         return [
             'label' => 'Accordion',
-            'fields' => [
-                'items' => ['type' => 'repeater', 'label' => 'Items', 'fields' => [
-                    'title' => ['type' => 'text', 'label' => 'Title'],
-                    'content' => ['type' => 'textarea', 'label' => 'Content']
-                ]]
-            ]
+            'fields' => ['title' => ['type' => 'text', 'label' => 'Title'], 'items' => ['type' => 'repeater', 'label' => 'Items', 'fields' => ['heading' => 'Heading', 'content' => 'Content']]]
         ];
     }
 
