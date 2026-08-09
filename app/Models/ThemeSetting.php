@@ -7,31 +7,43 @@ use Illuminate\Support\Facades\Cache;
 
 class ThemeSetting extends Model
 {
-    protected $fillable = ['key', 'value', 'group'];
+    protected $fillable = ['key', 'value', 'type', 'group'];
 
     protected $casts = [
-        'value' => 'array',
+        'value' => 'string', // Keep as string, decode manually if JSON
     ];
 
     public static function get($key, $default = null)
     {
-        return Cache::remember("theme_setting_{$key}", 3600, function () use ($key, $default) {
-            $setting = self::where('key', $key)->first();
-            return $setting ? $setting->value : $default;
-        });
+        $setting = self::where('key', $key)->first();
+        if (!$setting) {
+            return $default;
+        }
+
+        // Decode JSON if type is json
+        if ($setting->type === 'json') {
+            return json_decode($setting->value, true) ?? $setting->value;
+        }
+
+        // Cast booleans
+        if ($setting->type === 'boolean') {
+            return (bool) $setting->value;
+        }
+
+        return $setting->value;
     }
 
-    public static function set($key, $value, $group = 'global')
+    public static function set($key, $value, $type = 'string', $group = 'general')
     {
-        Cache::forget("theme_setting_{$key}");
+        $encodedValue = is_array($value) ? json_encode($value) : $value;
         return self::updateOrCreate(
             ['key' => $key],
-            ['value' => $value, 'group' => $group]
+            ['value' => $encodedValue, 'type' => $type, 'group' => $group]
         );
     }
 
     public static function flushCache()
     {
-        Cache::tags(['theme_settings'])->flush();
+        // Cache flushing handled by observer or manual call
     }
 }

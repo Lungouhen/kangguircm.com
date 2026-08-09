@@ -98,3 +98,18 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/theme-customizer/update', [App\Http\Controllers\Admin\ThemeCustomizerController::class, 'update'])->name('theme.update');
     Route::get('/theme-customizer/reset', [App\Http\Controllers\Admin\ThemeCustomizerController::class, 'reset'])->name('theme.reset');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Role & Theme Management Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'admin'])->group(function () {
+    // Roles & Permissions
+    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class)->prefix('admin')->names('admin.roles');
+    
+    // Theme Customizer
+    Route::get('admin/theme', [\App\Http\Controllers\Admin\ThemeController::class, 'edit'])->name('admin.theme.edit');
+    Route::post('admin/theme', [\App\Http\Controllers\Admin\ThemeController::class, 'update'])->name('admin.theme.update');
+    Route::get('css/dynamic-theme.css', [\App\Http\Controllers\Admin\ThemeController::class, 'preview'])->name('admin.theme.preview');
+});
