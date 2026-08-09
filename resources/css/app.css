@@ -1,25 +1,58 @@
-/* ==========================================================================
-   App CSS - KangGui RCM SaaS Platform
-   Hybrid: Tailwind CSS + PostCSS for modern styling
-   ========================================================================== */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Import custom modules */
-@import './variables.css';
-@import './custom-media.css';
-@import './base/reset.css';
-@import './base/typography.css';
-@import './base/base.css';
-@import './layout/header.css';
-@import './layout/footer.css';
-@import './layout/grid.css';
-@import './components/buttons.css';
-@import './components/cards.css';
-@import './components/forms.css';
-@import './components/navigation.css';
-@import './utilities/spacing.css';
-@import './utilities/colors.css';
-@import './utilities/display.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient Text */
+.text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #0284c7, #4f46e5);
+}
+
+/* Animated Blob Background */
+.blob-bg {
+    position: absolute;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.4;
+    animation: move 10s infinite alternate;
+}
+
+@keyframes move {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(20px, -20px) scale(1.1); }
+}
+
+/* Counter Animation Base */
+.counter-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    color: #0284c7;
+}
