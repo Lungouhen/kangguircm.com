@@ -1,30 +1,10 @@
 ```
-# Environment
+# Environment variables
 .env
-.env.local
-.env.*
 
-# Dependencies
-vendor/
-
-# Database
+# Database files
 database/*.sqlite
 
-# Logs
-storage/logs/*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# PHP specific
-*.php~
-*.swp
-
-# Laravel specific
+# Cache files
 bootstrap/cache/
-public/storage
-storage/framework/cache/
-storage/framework/sessions/
-storage/framework/views/
-```vendor/\nnode_modules/\n.env\n*.log\nstorage/*.sqlite
+```
