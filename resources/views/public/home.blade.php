@@ -6,8 +6,8 @@
 <!-- Hero Section -->
 <section class="relative pt-20 pb-32 overflow-hidden hero-gradient">
     <!-- Animated Background Blobs -->
-    <div class="blob-bg bg-brand-300 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2"></div>
-    <div class="blob-bg bg-indigo-300 w-80 h-80 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3" style="animation-delay: 2s;"></div>
+    <div class="blob-bg blob-delay-1 bg-brand-300 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="blob-bg blob-delay-2 bg-indigo-300 w-80 h-80 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3"></div>
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center max-w-4xl mx-auto">
