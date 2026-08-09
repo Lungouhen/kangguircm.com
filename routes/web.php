@@ -1,94 +1,93 @@
 <?php
 
-declare(strict_types=1);
-
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Crm\CompanyController;
+use App\Http\Controllers\Crm\ContactController;
+use App\Http\Controllers\Crm\PipelineController;
+use App\Http\Controllers\Crm\DealController;
+use App\Http\Controllers\Hrm\DepartmentController;
+use App\Http\Controllers\Hrm\EmployeeController;
+use App\Http\Controllers\Hrm\AttendanceController;
+use App\Http\Controllers\Hrm\LeaveRequestController;
+use App\Http\Controllers\Email\CampaignController;
+use App\Http\Controllers\Email\SubscriberController;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - KangGui RCM SaaS Platform
+| Public Routes (SEO Optimized)
 |--------------------------------------------------------------------------
 */
 
-// Public Home Page
-Route::get('/', function () {
-    return view('welcome');
-});
+// Homepage
+Route::get('/', [PublicPageController::class, 'home'])->name('home');
 
-// Public Blog Posts
-Route::get('/blog', [App\Http\Controllers\Cms\PostController::class, 'index'])->name('blog.index');
-Route::get('/blog/{slug}', [App\Http\Controllers\Cms\PostController::class, 'show'])->name('blog.show');
+// Dynamic Pages (Must be last to avoid conflict)
+Route::get('/{slug}', [PublicPageController::class, 'show'])->name('page.show');
 
-// Public Pages
-Route::get('/page/{slug}', [App\Http\Controllers\Cms\PageController::class, 'show'])->name('page.show');
+// SEO Assets
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/robots.txt', function () {
+    return response("User-agent: *\nDisallow:\nSitemap: " . url('/sitemap.xml'), 200)->header('Content-Type', 'text/plain');
+})->name('robots.txt');
 
-// Authentication Routes
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-    Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
-});
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-});
-
-// Protected Dashboard Routes
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     
     // Dashboard
-    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // CMS Module Routes
-    Route::prefix('cms')->name('cms.')->group(function () {
-        Route::resource('posts', App\Http\Controllers\Cms\PostController::class);
-        Route::resource('pages', App\Http\Controllers\Cms\PageController::class);
-        Route::resource('categories', App\Http\Controllers\Cms\CategoryController::class);
-        Route::resource('media', App\Http\Controllers\Cms\MediaController::class);
-        
-        // Custom actions
-        Route::post('posts/{post}/publish', [App\Http\Controllers\Cms\PostController::class, 'publish'])->name('posts.publish');
-        Route::post('posts/{post}/draft', [App\Http\Controllers\Cms\PostController::class, 'draft'])->name('posts.draft');
-    });
+    // CMS Modules
+    Route::resource('settings', SettingController::class)->only(['index', 'update']);
+    Route::resource('menus', MenuController::class);
+    Route::resource('pages', AdminPageController::class);
+    Route::resource('media', MediaController::class)->only(['index', 'store', 'destroy']);
+    
+    // Blog Module
+    Route::resource('posts', PostController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('tags', TagController::class);
 
-    // Email Marketing Module Routes
-    Route::prefix('email')->name('email.')->group(function () {
-        Route::resource('lists', App\Http\Controllers\Email\SubscriberListController::class);
-        Route::resource('subscribers', App\Http\Controllers\Email\SubscriberController::class);
-        Route::resource('templates', App\Http\Controllers\Email\TemplateController::class);
-        Route::resource('campaigns', App\Http\Controllers\Email\CampaignController::class);
-        
-        // Custom actions
-        Route::post('campaigns/{campaign}/send', [App\Http\Controllers\Email\CampaignController::class, 'send'])->name('campaigns.send');
-        Route::post('subscribers/import', [App\Http\Controllers\Email\SubscriberController::class, 'import'])->name('subscribers.import');
-    });
+    // Audit Logs
+    Route::resource('audit-logs', AuditLogController::class)->only(['index', 'show']);
 
-    // HRM Module Routes
-    Route::prefix('hrm')->name('hrm.')->group(function () {
-        Route::resource('employees', App\Http\Controllers\Hrm\EmployeeController::class);
-        Route::resource('attendances', App\Http\Controllers\Hrm\AttendanceController::class);
-        Route::resource('leave-requests', App\Http\Controllers\Hrm\LeaveRequestController::class);
-        Route::resource('payrolls', App\Http\Controllers\Hrm\PayrollController::class);
-        
-        // Custom actions
-        Route::post('employees/{employee}/clock-in', [App\Http\Controllers\Hrm\AttendanceController::class, 'clockIn'])->name('attendances.clock-in');
-        Route::post('employees/{employee}/clock-out', [App\Http\Controllers\Hrm\AttendanceController::class, 'clockOut'])->name('attendances.clock-out');
-        Route::post('leave-requests/{leaveRequest}/approve', [App\Http\Controllers\Hrm\LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
-        Route::post('leave-requests/{leaveRequest}/reject', [App\Http\Controllers\Hrm\LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
-    });
+    // CRM Module
+    Route::resource('companies', CompanyController::class);
+    Route::resource('contacts', ContactController::class);
+    Route::resource('pipelines', PipelineController::class);
+    Route::resource('deals', DealController::class);
 
-    // User Management (Admin only)
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('index');
-        Route::get('/{user}', [App\Http\Controllers\UserController::class, 'show'])->name('show');
-        Route::put('/{user}', [App\Http\Controllers\UserController::class, 'update'])->name('update');
-        Route::delete('/{user}', [App\Http\Controllers\UserController::class, 'destroy'])->name('destroy');
-    });
-});
+    // HRM Module
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('employees', EmployeeController::class);
+    Route::resource('attendances', AttendanceController::class);
+    Route::resource('leave-requests', LeaveRequestController::class);
 
-// SEO Routes - Sitemap & Robots
-Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index']);
-Route::get('/robots.txt', function() {
-    return response()->file(public_path('robots.txt'));
+    // Email Marketing
+    Route::resource('campaigns', CampaignController::class);
+    Route::resource('subscribers', SubscriberController::class);
 });

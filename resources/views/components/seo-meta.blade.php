@@ -1,39 +1,35 @@
-@props([
-    'title' => config('app.name'),
-    'description' => 'KangGui RCM - CMS, Email Marketing & HRM Platform',
-    'image' => null,
-    'url' => null,
-    'type' => 'website',
-    'twitterCard' => 'summary_large_image',
-])
+@props(['title' => config('app.name'), 'description' => '', 'image' => null, 'url' => request()->url(), 'type' => 'website'])
 
-@php
-    $meta = \App\Services\SeoService::generateMeta($title, $description, $image, $url, $type);
-@endphp
+{{-- Title --}}
+<title>{{ $title }} | {{ config('app.name') }}</title>
+<meta name="title" content="{{ $title }} | {{ config('app.name') }}">
 
-<!-- Primary Meta Tags -->
-<title>{{ $meta['title'] }}</title>
-<meta name="title" content="{{ $meta['title'] }}">
-<meta name="description" content="{{ $meta['description'] }}">
-<meta name="author" content="{{ config('app.name') }}">
-<link rel="canonical" href="{{ $meta['url'] }}">
+{{-- Meta Description --}}
+@if($description)
+<meta name="description" content="{{ $description }}">
+@endif
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="{{ $meta['type'] }}">
-<meta property="og:url" content="{{ $meta['url'] }}">
-<meta property="og:title" content="{{ $meta['title'] }}">
-<meta property="og:description" content="{{ $meta['description'] }}">
-<meta property="og:image" content="{{ $meta['image'] }}">
-<meta property="og:site_name" content="{{ $meta['site_name'] }}">
+{{-- Canonical URL --}}
+<link rel="canonical" href="{{ $url }}">
 
-<!-- Twitter -->
-<meta property="twitter:card" content="{{ $twitterCard }}">
-<meta property="twitter:url" content="{{ $meta['url'] }}">
-<meta property="twitter:title" content="{{ $meta['title'] }}">
-<meta property="twitter:description" content="{{ $meta['description'] }}">
-<meta property="twitter:image" content="{{ $meta['image'] }}">
+{{-- Open Graph / Facebook --}}
+<meta property="og:type" content="{{ $type }}">
+<meta property="og:url" content="{{ $url }}">
+<meta property="og:title" content="{{ $title }} | {{ config('app.name') }}">
+@if($description)
+<meta property="og:description" content="{{ $description }}">
+@endif
+@if($image)
+<meta property="og:image" content="{{ $image }}">
+@endif
 
-<!-- Additional SEO -->
-<meta name="robots" content="index, follow">
-<meta name="googlebot" content="index, follow">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+{{-- Twitter --}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{{ $url }}">
+<meta name="twitter:title" content="{{ $title }} | {{ config('app.name') }}">
+@if($description)
+<meta name="twitter:description" content="{{ $description }}">
+@endif
+@if($image)
+<meta name="twitter:image" content="{{ $image }}">
+@endif

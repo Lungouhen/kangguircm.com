@@ -1,38 +1,28 @@
-/* 
- * Premium UI/UX Styles for kangguircm.com
- * Features: Glassmorphism, Modern Gradients, Animations, Typography
- */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* Premium UI/UX Enhancements */
 
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    overflow-x: hidden;
+    --shadow-lg: 0 10px 40px -10px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 60px -15px rgba(0,0,0,0.15);
 }
 
 /* Glassmorphism Effects */
-.glass-card {
+.glass {
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 16px;
 }
 
-.glass-nav {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-lg);
 }
 
 /* Modern Gradients */
@@ -47,30 +37,29 @@ body {
     background: var(--primary-gradient);
 }
 
-.gradient-bg-secondary {
+.gradient-secondary {
     background: var(--secondary-gradient);
 }
 
 /* Floating Animation */
 @keyframes float {
-    0% { transform: translateY(0px); }
+    0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
 }
 
 .float-animation {
     animation: float 3s ease-in-out infinite;
 }
 
-/* Fade In Up Animation (Fallback if AOS not loaded) */
+/* Fade In Up Animation */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translate3d(0, 40px, 0);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
-        transform: translate3d(0, 0, 0);
+        transform: translateY(0);
     }
 }
 
@@ -78,70 +67,33 @@ body {
     animation: fadeInUp 0.8s ease-out forwards;
 }
 
-/* Button Enhancements */
+/* Premium Button */
 .btn-premium {
-    position: relative;
-    overflow: hidden;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 50px;
+    font-weight: 600;
     transition: all 0.3s ease;
-    z-index: 1;
-}
-
-.btn-premium::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s;
-    z-index: -1;
-}
-
-.btn-premium:hover::before {
-    left: 100%;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    border: none;
 }
 
 .btn-premium:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
 }
 
-/* Card Hover Effects */
-.card-hover-lift {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.card-hover-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-}
-
-/* Section Dividers */
-.wave-divider {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+/* Card Hover Effect */
+.card-premium {
+    transition: all 0.3s ease;
+    border-radius: 16px;
     overflow: hidden;
-    line-height: 0;
 }
 
-/* Stats Counter Styling */
-.stat-number {
-    font-size: 3rem;
-    font-weight: 800;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Responsive Typography */
-@media (max-width: 768px) {
-    .stat-number {
-        font-size: 2rem;
-    }
+.card-premium:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
 }
 
 /* Smooth Scroll */
@@ -159,10 +111,10 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary-gradient);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
