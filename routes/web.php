@@ -91,3 +91,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('campaigns', CampaignController::class);
     Route::resource('subscribers', SubscriberController::class);
 });
+
+// Theme Customizer Routes
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/theme-customizer', [App\Http\Controllers\Admin\ThemeCustomizerController::class, 'index'])->name('theme.index');
+    Route::post('/theme-customizer/update', [App\Http\Controllers\Admin\ThemeCustomizerController::class, 'update'])->name('theme.update');
+    Route::get('/theme-customizer/reset', [App\Http\Controllers\Admin\ThemeCustomizerController::class, 'reset'])->name('theme.reset');
+});
