@@ -1,29 +1,30 @@
 ```
-# Dependencies
-vendor/
-
-# Logs
-*.log
-
 # Environment
 .env
 .env.local
 .env.*
 
-# Cache
-.cache/
-.phpunit.result.cache
+# Dependencies
+vendor/
 
-# Compiled and build artifacts
-*.o
-*.obj
-*.a
-*.so
-*.dll
-*.exe
-*.out
+# Database
+database/*.sqlite
 
-# Distribution
-dist/
-build/
-```
+# Logs
+storage/logs/*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# PHP specific
+*.php~
+*.swp
+
+# Laravel specific
+bootstrap/cache/
+public/storage
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+```vendor/\nnode_modules/\n.env\n*.log\nstorage/*.sqlite
