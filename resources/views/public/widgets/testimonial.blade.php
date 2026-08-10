@@ -1,0 +1,1 @@
+<section class="grid md:grid-cols-3 gap-6 py-12">@foreach(($testimonials ?? []) as $testimonial)<blockquote class="p-6 bg-white shadow"><p>“{{ $testimonial['quote'] ?? '' }}”</p><footer class="mt-4 font-bold">{{ $testimonial['author'] ?? '' }} <span class="font-normal">{{ $testimonial['role'] ?? '' }}</span></footer></blockquote>@endforeach</section>

@@ -1,28 +1,9 @@
 @extends('layouts.admin')
-@section('title', 'Generate Payroll')
+@section('title','Generate Payroll')
 @section('content')
-<div class="max-w-3xl mx-auto">
-    <div class="mb-6"><a href="{{ route('admin.hrm.payrolls.index') }}" class="text-blue-600">&larr; Back to Payroll</a></div>
-    <form action="{{ route('admin.hrm.payrolls.store') }}" method="POST" class="bg-white shadow rounded-lg p-6 space-y-4">
-        @csrf
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Select Employee</label>
-            <select name="employee_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                @foreach($employees as $employee)
-                <option value="{{ $employee->id }}">{{ $employee->user->name }} - {{ $employee->position }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Pay Period</label>
-            <input type="text" name="period" required placeholder="e.g., August 2024" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="{{ old('period', date('F Y')) }}">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-gray-700">Base Salary</label><input type="number" step="0.01" name="base_salary" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700">Allowances</label><input type="number" step="0.01" name="allowances" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></div>
-        </div>
-        <div><label class="block text-sm font-medium text-gray-700">Deductions</label><input type="number" step="0.01" name="deductions" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></div>
-        <div class="flex justify-end"><button type="submit" class="btn-primary">Generate Payslip</button></div>
-    </form>
-</div>
+<div class="max-w-3xl mx-auto"><a href="{{ route('admin.hrm.payrolls.index') }}">&larr; Back to Payroll</a><form action="{{ route('admin.hrm.payrolls.store') }}" method="POST" class="card p-6 mt-6 space-y-4">@csrf
+<label><span class="form__label">Employee</span><select name="employee_id" class="form__select" required>@foreach($employees as $employee)<option value="{{ $employee->id }}">{{ $employee->user?->name??$employee->employee_code }} — {{ $employee->position }}</option>@endforeach</select></label>
+<div class="grid md:grid-cols-3 gap-4"><label><span class="form__label">Period start</span><input type="date" name="period_start" class="form__input" required></label><label><span class="form__label">Period end</span><input type="date" name="period_end" class="form__input" required></label><label><span class="form__label">Pay date</span><input type="date" name="pay_date" class="form__input" required></label></div>
+<div class="grid md:grid-cols-2 gap-4">@foreach(['basic_salary'=>'Basic salary','allowances'=>'Allowances','overtime_pay'=>'Overtime pay','bonus'=>'Bonus','deductions'=>'Deductions','tax'=>'Tax','social_security'=>'Social security'] as $name=>$label)<label><span class="form__label">{{ $label }}</span><input type="number" min="0" step="0.01" name="{{ $name }}" value="{{ old($name,0) }}" class="form__input" @if($name==='basic_salary') required @endif></label>@endforeach</div>
+<label><span class="form__label">Notes</span><textarea name="notes" class="form__textarea">{{ old('notes') }}</textarea></label><div class="flex justify-end"><button class="btn btn--primary">Create payroll</button></div></form></div>
 @endsection

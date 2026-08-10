@@ -1,34 +1,45 @@
-```
 # Dependencies
-vendor/
+/vendor/
+/node_modules/
 
-# Cache
-bootstrap/cache/
+# Laravel runtime
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/storage/*.key
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
 
 # Environment
 .env
 .env.local
 .env.*
+!.env.example
 
-# Logs
+# Frontend build output
+/public/build/
+/public/hot
+
+# Logs and temporary files
 *.log
-
-# Temporary files
 *.tmp
 *.swp
 
-# IDE
+# IDE and OS
 .vscode/
 .idea/
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Tests
+# Tests and coverage
 .phpunit.result.cache
-
-# Coverage
 coverage/
 htmlcov/
 .coverage
@@ -52,9 +63,6 @@ htmlcov/
 *.Z
 *.lz
 *.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
 
-```
+# Local databases
+/database/*.sqlite

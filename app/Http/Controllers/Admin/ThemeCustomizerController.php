@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ThemeSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class ThemeCustomizerController extends Controller
 {
     public function index()
     {
-        $settings = ThemeSetting::all()->groupBy('group');
-        return view('admin.theme-customizer.index', compact('settings'));
+        return view('admin.theme-customizer.index');
     }
 
     public function update(Request $request)
@@ -44,15 +42,15 @@ class ThemeCustomizerController extends Controller
             'speed' => $validated['animation_speed'],
         ]);
 
-        Cache::flush();
+        ThemeSetting::flushCache();
 
         return redirect()->back()->with('success', 'Theme settings updated successfully!');
     }
 
     public function reset()
     {
+        ThemeSetting::flushCache();
         ThemeSetting::truncate();
-        Cache::flush();
         return redirect()->back()->with('success', 'Theme reset to defaults.');
     }
 }

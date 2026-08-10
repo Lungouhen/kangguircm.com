@@ -7,16 +7,16 @@
     <div class="max-w-4xl mx-auto">
         <!-- Header Actions -->
         <div class="mb-6 flex justify-between items-center">
-            <a href="{{ route('admin.posts.index') }}" 
+            <a href="{{ route('admin.cms.posts.index') }}"
                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                 ← Back to Posts
             </a>
             <div class="flex space-x-3">
-                <a href="{{ route('admin.posts.edit', $post->id) }}" 
+                <a href="{{ route('admin.cms.posts.edit', $post->id) }}"
                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Edit Post
                 </a>
-                <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST" class="inline"
+                <form action="{{ route('admin.cms.posts.destroy', $post->id) }}" method="POST" class="inline"
                       onsubmit="return confirm('Are you sure you want to delete this post?');">
                     @csrf
                     @method('DELETE')
@@ -32,8 +32,8 @@
             <!-- Featured Image -->
             @if($post->featured_image)
                 <div class="relative h-64 w-full">
-                    <img src="{{ asset('storage/' . $post->featured_image) }}" 
-                         alt="{{ $post->title }}" 
+                    <img src="{{ asset('storage/' . $post->featured_image) }}"
+                         alt="{{ $post->title }}"
                          class="w-full h-full object-cover">
                 </div>
             @endif
@@ -42,8 +42,8 @@
                 <!-- Title & Meta -->
                 <header class="mb-6">
                     <div class="flex items-center space-x-3 mb-3">
-                        <span class="px-3 py-1 text-xs font-medium rounded-full 
-                            {{ $post->status === 'published' ? 'bg-green-100 text-green-800' : 
+                        <span class="px-3 py-1 text-xs font-medium rounded-full
+                            {{ $post->status === 'published' ? 'bg-green-100 text-green-800' :
                                ($post->status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
                             {{ ucfirst($post->status) }}
                         </span>

@@ -28,6 +28,11 @@
     </url>
     @endforeach
 
+    <!-- Structured RCM Content -->
+    @foreach($entries as $entry)
+    <url><loc>{{ route('content.show', [$entry->type, $entry->slug]) }}</loc><lastmod>{{ $entry->updated_at->toIso8601String() }}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    @endforeach
+
     <!-- Categories -->
     @foreach($categories as $category)
     <url>

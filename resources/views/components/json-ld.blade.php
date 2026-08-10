@@ -7,7 +7,7 @@
     @if($type === 'Organization')
     "name": "{{ config('app.name') }}",
     "url": "{{ url('/') }}",
-    "logo": "{{ asset('images/logo.png') }}"
+    "logo": "{{ asset('images/logo.svg') }}"
     @elseif($type === 'WebSite')
     "name": "{{ config('app.name') }}",
     "url": "{{ url('/') }}",
@@ -18,7 +18,7 @@
     }
     @elseif($type === 'Article')
     "headline": "{{ $data['title'] ?? '' }}",
-    "image": "{{ $data['image'] ?? asset('images/placeholder.jpg') }}",
+    "image": "{{ $data['image'] ?? asset('images/og-default.jpg') }}",
     "author": {
         "@type": "Person",
         "name": "{{ $data['author'] ?? config('app.name') }}"
@@ -28,7 +28,7 @@
         "name": "{{ config('app.name') }}",
         "logo": {
             "@type": "ImageObject",
-            "url": "{{ asset('images/logo.png') }}"
+            "url": "{{ asset('images/logo.svg') }}"
         }
     },
     "datePublished": "{{ $data['date'] ?? now()->toIso8601String() }}",

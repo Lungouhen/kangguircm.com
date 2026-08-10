@@ -4,6 +4,7 @@ namespace App\Widgets;
 
 class ContactWidget implements WidgetInterface
 {
+    use LegacyWidgetAdapter;
     public function identifier(): string
     {
         return 'contact';

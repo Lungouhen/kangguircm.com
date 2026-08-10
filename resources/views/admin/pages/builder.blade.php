@@ -1,262 +1,32 @@
-@extends('admin.layout')
-
-@section('title', 'Visual Page Builder - ' . $page->title)
-
+@extends('layouts.admin')
+@section('title', 'Build '.$page->title)
 @section('content')
-<div class="flex h-screen overflow-hidden bg-gray-100" x-data="pageBuilder()">
-    
-    <!-- Left Sidebar: Widget Library -->
-    <div class="w-80 bg-white border-r border-gray-200 flex flex-col shadow-lg z-20">
-        <div class="p-5 border-b border-gray-200 bg-indigo-900">
-            <h2 class="text-white font-bold text-lg flex items-center">
-                <span class="mr-2">🧩</span> Widget Library
-            </h2>
-            <p class="text-indigo-200 text-xs mt-1">Drag & drop to build</p>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto p-4 space-y-3">
-            @foreach($widgets as $widget)
-                <div class="bg-white border border-gray-200 rounded-lg p-4 cursor-move hover:shadow-md hover:border-indigo-500 transition-all group"
-                     draggable="true"
-                     data-widget-id="{{ $widget->getId() }}"
-                     @dragstart="onDragStart($event, '{{ $widget->getId() }}')">
-                    
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center">
-                            <span class="text-2xl mr-3">{{ $widget->getIcon() }}</span>
-                            <span class="font-semibold text-gray-800">{{ $widget->getName() }}</span>
-                        </div>
-                        <span class="text-gray-400 group-hover:text-indigo-600">⋮⋮</span>
-                    </div>
-                    
-                    <p class="text-xs text-gray-500 pl-9">Click to add or drag to canvas</p>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    <!-- Center: Visual Canvas -->
-    <div class="flex-1 flex flex-col h-full relative">
-        <!-- Top Toolbar -->
-        <div class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm z-10">
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('admin.pages.index') }}" class="text-gray-500 hover:text-gray-700">
-                    ← Back
-                </a>
-                <h1 class="text-xl font-bold text-gray-800">{{ $page->title }}</h1>
-                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full" x-show="saved">Saved</span>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <button @click="preview()" class="px-4 py-2 text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 font-medium">
-                    👁 Preview
-                </button>
-                <button @click="save()" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium shadow-md transition-transform active:scale-95">
-                    💾 Save Changes
-                </button>
-            </div>
-        </div>
-
-        <!-- Drop Zone / Canvas -->
-        <div class="flex-1 overflow-y-auto bg-gray-100 p-8" 
-             @dragover.prevent="isDragging = true" 
-             @dragleave="isDragging = false"
-             @drop.prevent="onDrop($event)">
-            
-            <div class="max-w-5xl mx-auto bg-white min-h-[800px] shadow-xl rounded-xl overflow-hidden relative">
-                
-                <!-- Empty State -->
-                <div x-show="blocks.length === 0" 
-                     class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 border-4 border-dashed border-gray-200 m-4 rounded-lg"
-                     :class="{ 'border-indigo-400 bg-indigo-50': isDragging }">
-                    <span class="text-6xl mb-4">🏗️</span>
-                    <p class="text-xl font-medium">Drag widgets here to start building</p>
-                    <p class="text-sm mt-2">or click on a widget in the sidebar</p>
-                </div>
-
-                <!-- Rendered Blocks -->
-                <template x-for="(block, index) in blocks" :key="block.id">
-                    <div class="relative group border-b border-gray-100 last:border-0">
-                        <!-- Block Actions -->
-                        <div class="absolute right-4 top-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
-                            <button @click="editBlock(index)" class="p-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600">✏️</button>
-                            <button @click="moveUp(index)" class="p-2 bg-gray-500 text-white rounded shadow hover:bg-gray-600">↑</button>
-                            <button @click="moveDown(index)" class="p-2 bg-gray-500 text-white rounded shadow hover:bg-gray-600">↓</button>
-                            <button @click="removeBlock(index)" class="p-2 bg-red-500 text-white rounded shadow hover:bg-red-600">🗑️</button>
-                        </div>
-                        
-                        <!-- Block Content (Live Preview) -->
-                        <div x-html="renderBlock(block)"></div>
-                    </div>
-                </template>
-            </div>
-            
-            <div class="h-20"></div> <!-- Spacer -->
-        </div>
-    </div>
-
-    <!-- Right Sidebar: Properties Panel (Modal/Drawer) -->
-    <div x-show="editingBlock !== null" 
-         class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform transition-transform duration-300 z-30 overflow-y-auto"
-         x-transition:enter="translate-x-full"
-         x-transition:enter-end="translate-x-0"
-         x-transition:leave="translate-x-0"
-         x-transition:leave-end="translate-x-full">
-        
-        <div class="p-6 border-b border-gray-200 bg-gray-50 flex justify-between items-center sticky top-0">
-            <h3 class="font-bold text-lg text-gray-800">Configure Widget</h3>
-            <button @click="editingBlock = null" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-        </div>
-        
-        <div class="p-6 space-y-6" x-if="editingBlock !== null">
-            <template x-if="blocks[editingBlock]">
-                <div>
-                    <p class="text-sm text-gray-500 mb-4">Editing: <span x-text="blocks[editingBlock].type"></span></p>
-                    
-                    <!-- Dynamic Fields based on Widget Type -->
-                    <template x-for="field in getFieldDefinition(blocks[editingBlock].type)" :key="field.name">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1" x-text="field.label"></label>
-                            
-                            <input x-if="field.type === 'text' || field.type === 'url'" 
-                                   type="text" 
-                                   x-model="blocks[editingBlock].data[field.name]"
-                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            
-                            <textarea x-if="field.type === 'textarea'" 
-                                      x-model="blocks[editingBlock].data[field.name]"
-                                      rows="3"
-                                      class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                            
-                            <input x-if="field.type === 'color'" 
-                                   type="color" 
-                                   x-model="blocks[editingBlock].data[field.name]"
-                                   class="h-10 w-full cursor-pointer">
-                            
-                            <input x-if="field.type === 'image'" 
-                                   type="text" 
-                                   x-model="blocks[editingBlock].data[field.name]"
-                                   placeholder="Image URL"
-                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
-                    </template>
-                    
-                    <div class="mt-8 pt-6 border-t border-gray-200">
-                        <button @click="saveBlockConfig()" class="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">
-                            Apply Changes
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </div>
+<div class="min-h-screen bg-slate-100" x-data="pageBuilder()" x-init="initialize()">
+    <header class="sticky top-0 z-30 bg-white border-b px-5 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4"><a href="{{ route('admin.pages.index') }}" class="text-slate-500">← Pages</a><div><h1 class="font-bold">{{ $page->title }}</h1><p class="text-xs text-slate-500">/{{ $page->slug }}</p></div><span x-show="saved" x-transition class="text-xs rounded-full bg-emerald-50 text-emerald-700 px-3 py-1">Saved</span></div>
+        <div class="flex flex-wrap gap-2"><button @click="undo" :disabled="!history.length" class="rounded border px-3 py-2 disabled:opacity-40" title="Undo">↶</button><button @click="redo" :disabled="!future.length" class="rounded border px-3 py-2 disabled:opacity-40" title="Redo">↷</button><a href="{{ route('admin.pages.revisions',$page) }}" class="rounded border px-4 py-2">Revisions</a><a target="_blank" rel="noopener" href="{{ $previewUrl }}" class="rounded border px-4 py-2">Preview</a><a href="{{ route('admin.pages.edit',$page) }}" class="rounded border px-4 py-2">Settings</a><button @click="save('manual')" :disabled="saving" class="rounded bg-blue-600 text-white px-5 py-2 font-semibold disabled:opacity-50" x-text="saving?'Saving…':'Save layout'"></button></div>
+    </header>
+    <div class="grid lg:grid-cols-[280px_minmax(0,1fr)_380px] min-h-[calc(100vh-65px)]">
+        <aside class="bg-white border-r p-4 overflow-y-auto"><label class="block text-xs font-bold uppercase text-slate-500">Widget library</label><input x-model="search" class="mt-3 w-full rounded border-slate-300" placeholder="Search widgets"><div class="mt-4 space-y-2"><template x-for="widget in filteredWidgets" :key="widget.id"><button type="button" @click="addWidget(widget)" class="w-full text-left rounded-lg border p-3 hover:border-blue-500 hover:bg-blue-50"><span class="text-xl" x-text="widget.icon"></span><span class="ml-2 font-semibold" x-text="widget.name"></span></button></template></div></aside>
+        <main class="p-5 lg:p-8 overflow-y-auto"><div x-show="error" class="mb-4 rounded bg-red-50 text-red-700 p-4" x-text="error"></div><div class="max-w-6xl mx-auto bg-white shadow min-h-[700px]"><div x-show="blocks.length===0" class="min-h-[700px] flex flex-col items-center justify-center text-slate-400"><span class="text-6xl">🏗️</span><p class="mt-4 text-lg">Choose a widget to begin</p></div><template x-for="(block,index) in blocks" :key="block.id"><section class="relative group border-b" draggable="true" @dragstart="dragStart(index)" @dragover.prevent @drop="dropAt(index)"><div class="absolute right-3 top-3 z-20 flex gap-1 opacity-0 group-hover:opacity-100"><button @click="select(index)" class="rounded bg-blue-600 text-white p-2" title="Edit">✎</button><button @click="move(index,-1)" class="rounded bg-slate-700 text-white p-2">↑</button><button @click="move(index,1)" class="rounded bg-slate-700 text-white p-2">↓</button><button @click="duplicate(index)" class="rounded bg-slate-700 text-white p-2" title="Duplicate">⧉</button><button @click="remove(index)" class="rounded bg-red-600 text-white p-2">×</button></div><div x-show="block.loading" class="p-10 text-center text-slate-400">Rendering preview…</div><div x-show="!block.loading" x-html="block.html"></div></section></template></div></main>
+        <aside class="bg-white border-l p-5 overflow-y-auto" x-show="activeBlock" x-cloak><template x-if="activeBlock"><div><div class="flex justify-between items-center"><div><p class="text-xs uppercase text-slate-500">Configure</p><h2 class="font-bold" x-text="activeDefinition?.name"></h2></div><button @click="activeIndex=null" class="text-2xl">×</button></div><div class="mt-6 space-y-5"><template x-for="field in activeDefinition?.fields || []" :key="field.name"><div><label class="block text-sm font-semibold mb-1" x-text="field.label"></label><input x-show="['text','url','email','number','image','color'].includes(field.type)" :type="field.type==='image'?'url':field.type" :list="field.type==='image'?'cms-media-library':null" x-model="activeBlock.data[field.name]" @input.debounce.400ms="render(activeBlock)" class="w-full rounded border-slate-300"><textarea x-show="field.type==='textarea'" x-model="activeBlock.data[field.name]" @input.debounce.400ms="render(activeBlock)" rows="4" class="w-full rounded border-slate-300"></textarea><select x-show="field.type==='select'" x-model="activeBlock.data[field.name]" @change="render(activeBlock)" class="w-full rounded border-slate-300"><template x-for="option in field.options || []"><option :value="typeof option==='object'?option.value:option" x-text="typeof option==='object'?option.label:option"></option></template></select><label x-show="field.type==='boolean'" class="flex items-center gap-2"><input type="checkbox" x-model="activeBlock.data[field.name]" @change="render(activeBlock)"><span>Enabled</span></label><div x-show="field.type==='repeater'" class="space-y-3"><template x-for="(item,itemIndex) in activeBlock.data[field.name] || []" :key="itemIndex"><div class="rounded border bg-slate-50 p-3"><div class="flex justify-between mb-3"><strong class="text-sm" x-text="`${field.label} ${itemIndex+1}`"></strong><button @click="removeRepeater(field,itemIndex)" class="text-red-600 text-sm">Remove</button></div><template x-for="child in field.fields || []" :key="child.name"><label class="block mb-3 text-xs"><span x-text="child.label"></span><textarea x-show="child.type==='textarea'" x-model="item[child.name]" @input.debounce.400ms="render(activeBlock)" rows="2" class="mt-1 w-full rounded border-slate-300"></textarea><input x-show="child.type!=='textarea'" :type="child.type==='image'?'url':'text'" x-model="item[child.name]" @input.debounce.400ms="render(activeBlock)" class="mt-1 w-full rounded border-slate-300"></label></template></div></template><button @click="addRepeater(field)" class="w-full rounded border border-dashed border-blue-400 text-blue-600 p-2">+ Add item</button></div></div></template><div class="mt-8 border-t pt-6 space-y-4"><h3 class="font-bold">Section design</h3><div class="grid grid-cols-2 gap-3"><label class="text-xs">Background<input type="color" x-model="activeBlock.style.background_color" class="mt-1 h-10 w-full" @change="dirty=true;render(activeBlock)"></label><label class="text-xs">Text color<input type="color" x-model="activeBlock.style.text_color" class="mt-1 h-10 w-full" @change="dirty=true;render(activeBlock)"></label><label class="text-xs">Top spacing<input type="number" min="0" max="200" x-model.number="activeBlock.style.padding_top" class="form__input mt-1" @input.debounce.300ms="dirty=true;render(activeBlock)"></label><label class="text-xs">Bottom spacing<input type="number" min="0" max="200" x-model.number="activeBlock.style.padding_bottom" class="form__input mt-1" @input.debounce.300ms="dirty=true;render(activeBlock)"></label></div><label class="block text-xs">Container<select x-model="activeBlock.style.container" class="form__select mt-1" @change="dirty=true;render(activeBlock)"><option value="full">Full width</option><option value="boxed">Boxed</option></select></label><label class="block text-xs">Text alignment<select x-model="activeBlock.style.text_align" class="form__select mt-1" @change="dirty=true;render(activeBlock)"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></label><label class="block text-xs">Animation<select x-model="activeBlock.style.animation" class="form__select mt-1" @change="dirty=true;render(activeBlock)"><option value="none">None</option><option value="fade-up">Fade up</option><option value="fade-down">Fade down</option><option value="fade-left">Fade left</option><option value="fade-right">Fade right</option><option value="zoom-in">Zoom in</option></select></label><label class="block text-xs">Anchor ID<input x-model="activeBlock.style.anchor_id" class="form__input mt-1" placeholder="services" @input.debounce.300ms="dirty=true;render(activeBlock)"></label><label class="block text-xs">Custom classes<input x-model="activeBlock.style.css_class" class="form__input mt-1" @input.debounce.300ms="dirty=true;render(activeBlock)"></label><div class="space-y-2 text-sm"><label class="flex gap-2"><input type="checkbox" x-model="activeBlock.style.hide_mobile" @change="dirty=true;render(activeBlock)"> Hide on mobile</label><label class="flex gap-2"><input type="checkbox" x-model="activeBlock.style.hide_tablet" @change="dirty=true;render(activeBlock)"> Hide on tablet</label><label class="flex gap-2"><input type="checkbox" x-model="activeBlock.style.hide_desktop" @change="dirty=true;render(activeBlock)"> Hide on desktop</label></div></div></div></div></template></aside>
     </div>
 </div>
-
+<datalist id="cms-media-library">@foreach($media as $item)<option value="{{ $item->url }}">{{ $item->alt_text }}</option>@endforeach</datalist>
+@push('scripts')
 <script>
-function pageBuilder() {
-    return {
-        blocks: {{ $page->content ?? '[]' }},
-        isDragging: false,
-        saved: false,
-        editingBlock: null,
-        widgetDefinitions: @json($widgets->map(fn($w) => [
-            'id' => $w->getId(), 
-            'name' => $w->getName(), 
-            'fields' => $w->getFields()
-        ])),
-        
-        onDragStart(event, widgetId) {
-            event.dataTransfer.setData('widgetId', widgetId);
-        },
-        
-        onDrop(event) {
-            const widgetId = event.dataTransfer.getData('widgetId');
-            if (widgetId) {
-                this.addWidget(widgetId);
-            }
-            this.isDragging = false;
-        },
-        
-        addWidget(widgetId) {
-            const def = this.widgetDefinitions.find(w => w.id === widgetId);
-            const newBlock = {
-                id: 'block_' + Date.now(),
-                type: widgetId,
-                data: {}
-            };
-            
-            // Set defaults
-            def.fields.forEach(f => {
-                if(f.default) newBlock.data[f.name] = f.default;
-            });
-            
-            this.blocks.push(newBlock);
-            this.editingBlock = this.blocks.length - 1;
-        },
-        
-        renderBlock(block) {
-            // In real app, this would fetch rendered HTML from server or use client-side templates
-            return `<div class="p-10 bg-gray-50 text-center text-gray-500">Preview of ${block.type}</div>`;
-        },
-        
-        removeBlock(index) {
-            if(confirm('Remove this section?')) {
-                this.blocks.splice(index, 1);
-                this.editingBlock = null;
-            }
-        },
-        
-        moveUp(index) {
-            if (index > 0) {
-                [this.blocks[index], this.blocks[index - 1]] = [this.blocks[index - 1], this.blocks[index]];
-            }
-        },
-        
-        moveDown(index) {
-            if (index < this.blocks.length - 1) {
-                [this.blocks[index], this.blocks[index + 1]] = [this.blocks[index + 1], this.blocks[index]];
-            }
-        },
-        
-        editBlock(index) {
-            this.editingBlock = index;
-        },
-        
-        saveBlockConfig() {
-            this.editingBlock = null;
-        },
-        
-        getFieldDefinition(type) {
-            const def = this.widgetDefinitions.find(w => w.id === type);
-            return def ? def.fields : [];
-        },
-        
-        async save() {
-            try {
-                const response = await fetch('{{ route('admin.pages.builder.update', $page->id) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ blocks: this.blocks })
-                });
-                
-                if (response.ok) {
-                    this.saved = true;
-                    setTimeout(() => this.saved = false, 2000);
-                }
-            } catch (e) {
-                alert('Error saving page');
-            }
-        },
-        
-        preview() {
-            // Open preview in new window
-            const win = window.open('', '_blank');
-            win.document.write('<html><head><title>Preview</title></head><body>' + JSON.stringify(this.blocks) + '</body></html>');
-        }
-    }
-}
+function pageBuilder(){return{
+ blocks:@json($page->content ?? []),widgets:@json($widgets->map(fn($w)=>['id'=>$w->getId(),'name'=>$w->getName(),'icon'=>$w->getIcon(),'fields'=>$w->getFields()])->values()),search:'',activeIndex:null,saving:false,saved:false,error:'',dirty:false,lockVersion:{{ $page->lock_version }},history:[],future:[],dragIndex:null,
+ get filteredWidgets(){const q=this.search.toLowerCase();return this.widgets.filter(w=>w.name.toLowerCase().includes(q))},get activeBlock(){return this.activeIndex===null?null:this.blocks[this.activeIndex]},get activeDefinition(){return this.activeBlock?this.widgets.find(w=>w.id===this.activeBlock.type):null},
+ defaultStyle(){return{background_color:'#ffffff',text_color:'#0f172a',padding_top:0,padding_bottom:0,container:'full',text_align:'left',animation:'none',anchor_id:'',css_class:'',hide_mobile:false,hide_tablet:false,hide_desktop:false}},initialize(){this.blocks=this.blocks.map(b=>({...b,data:b.data||{},style:{...this.defaultStyle(),...(b.style||{})},html:'',loading:true}));this.blocks.forEach(b=>this.render(b));setInterval(()=>{if(this.dirty&&!this.saving)this.save('autosave')},30000);window.addEventListener('beforeunload',e=>{if(this.dirty){e.preventDefault();e.returnValue=''}})},
+ snapshot(){this.history.push(JSON.stringify(this.cleanBlocks()));if(this.history.length>30)this.history.shift();this.future=[];this.dirty=true},cleanBlocks(){return this.blocks.map(({id,type,data,style})=>({id,type,data,style}))},restore(raw){this.blocks=JSON.parse(raw).map(b=>({...b,style:{...this.defaultStyle(),...(b.style||{})},html:'',loading:true}));this.blocks.forEach(b=>this.render(b));this.activeIndex=null;this.dirty=true},
+ undo(){if(!this.history.length)return;this.future.push(JSON.stringify(this.cleanBlocks()));this.restore(this.history.pop())},redo(){if(!this.future.length)return;this.history.push(JSON.stringify(this.cleanBlocks()));this.restore(this.future.pop())},
+ addWidget(w){this.snapshot();const data={};w.fields.forEach(f=>data[f.name]=f.type==='repeater'?[]:(f.default??(f.type==='boolean'?false:'')));const block={id:'block_'+Date.now()+'_'+Math.random().toString(36).slice(2),type:w.id,data,style:this.defaultStyle(),html:'',loading:true};this.blocks.push(block);this.activeIndex=this.blocks.length-1;this.render(block)},select(i){this.activeIndex=i},
+ move(i,d){const n=i+d;if(n<0||n>=this.blocks.length)return;this.snapshot();[this.blocks[i],this.blocks[n]]=[this.blocks[n],this.blocks[i]];this.activeIndex=n},duplicate(i){this.snapshot();const copy=JSON.parse(JSON.stringify(this.blocks[i]));copy.id='block_'+Date.now()+'_'+Math.random().toString(36).slice(2);copy.html='';copy.loading=true;this.blocks.splice(i+1,0,copy);this.render(copy)},remove(i){if(confirm('Remove this section?')){this.snapshot();this.blocks.splice(i,1);this.activeIndex=null}},dragStart(i){this.dragIndex=i},dropAt(i){if(this.dragIndex===null||this.dragIndex===i)return;this.snapshot();const [block]=this.blocks.splice(this.dragIndex,1);this.blocks.splice(i,0,block);this.dragIndex=null;this.activeIndex=i},
+ addRepeater(field){this.snapshot();if(!Array.isArray(this.activeBlock.data[field.name]))this.activeBlock.data[field.name]=[];const item={};(field.fields||[]).forEach(f=>item[f.name]='');this.activeBlock.data[field.name].push(item);this.render(this.activeBlock)},removeRepeater(field,i){this.snapshot();this.activeBlock.data[field.name].splice(i,1);this.render(this.activeBlock)},
+ async render(block){block.loading=true;this.dirty=true;try{const r=await fetch(@json(route('admin.pages.builder.preview')),{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':@json(csrf_token())},body:JSON.stringify({widget_id:block.type,data:block.data,style:block.style,block_id:block.id})});if(!r.ok)throw new Error('Preview failed');block.html=(await r.json()).html}catch(e){block.html='<div class="p-8 text-red-600">Unable to render preview.</div>'}finally{block.loading=false}},
+ async save(reason='manual'){this.saving=true;this.error='';try{const r=await fetch(@json(route('admin.pages.builder.update',$page)),{method:'PUT',headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':@json(csrf_token())},body:JSON.stringify({blocks:this.cleanBlocks(),lock_version:this.lockVersion,reason})});const j=await r.json();if(!r.ok)throw new Error(j.message||'Unable to save layout');this.lockVersion=j.lock_version;this.dirty=false;this.saved=true;setTimeout(()=>this.saved=false,2500)}catch(e){this.error=e.message}finally{this.saving=false}}
+}}
 </script>
+@endpush
 @endsection

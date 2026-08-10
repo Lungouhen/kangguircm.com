@@ -1,6 +1,6 @@
-<x-admin-layout>
-    <x-slot name="title">Theme Customizer</x-slot>
-    <x-slot name="subtitle">Control global design, colors, and fonts without code</x-slot>
+@extends('layouts.admin')
+@section('title', 'Theme Customizer')
+@section('content')
 
     <div class="space-y-6">
         @if(session('success'))
@@ -9,7 +9,7 @@
 
         <form action="{{ route('admin.theme.update') }}" method="POST" class="space-y-8">
             @csrf
-            
+
             <!-- Colors -->
             <div class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-lg font-medium mb-4">Brand Colors</h3>
@@ -69,9 +69,10 @@
             </div>
 
             <div class="flex justify-between">
-                <a href="{{ route('admin.theme.reset') }}" class="text-red-600 hover:text-red-800 text-sm">Reset to Defaults</a>
+                <button type="submit" form="reset-theme" class="text-red-600 hover:text-red-800 text-sm">Reset to Defaults</button>
                 <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">Save Changes</button>
             </div>
         </form>
     </div>
-</x-admin-layout>
+<form id="reset-theme" method="POST" action="{{ route('admin.theme.reset') }}" class="hidden">@csrf</form>
+@endsection

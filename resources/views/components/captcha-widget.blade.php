@@ -1,0 +1,1 @@
+@if(config('integrations.turnstile.enabled') && config('integrations.turnstile.site_key'))<div {{ $attributes }}><div class="cf-turnstile" data-sitekey="{{ config('integrations.turnstile.site_key') }}"></div><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script></div>@endif

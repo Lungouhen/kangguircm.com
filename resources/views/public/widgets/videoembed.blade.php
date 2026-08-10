@@ -10,12 +10,12 @@
                 @endphp
                 <iframe class="w-full h-96 rounded-lg shadow-lg" 
                         src="https://www.youtube.com/embed/{{ $videoId }}?{{ $autoplay ? 'autoplay=1' : '' }}" 
-                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        title="Embedded YouTube video" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             @elseif(Str::contains($video_url, 'vimeo.com'))
                 @php $videoId = Str::afterLast($video_url, '/'); @endphp
                 <iframe class="w-full h-96 rounded-lg shadow-lg" 
                         src="https://player.vimeo.com/video/{{ $videoId }}?{{ $autoplay ? 'autoplay=1' : '' }}" 
-                        frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                        title="Embedded Vimeo video" loading="lazy" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
             @else
                 <div class="text-white text-center">Invalid Video URL</div>
             @endif

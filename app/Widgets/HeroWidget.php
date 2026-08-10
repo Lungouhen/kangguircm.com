@@ -36,12 +36,26 @@ class HeroWidget implements WidgetInterface
         $title = $data['title'] ?? 'Welcome';
         $subtitle = $data['subtitle'] ?? '';
         $btnText = $data['button_text'] ?? '';
-        $btnUrl = $data['button_url'] ?? '#';
-        $bgImage = $data['background_image'] ?? null;
-        $overlay = $data['overlay_color'] ?? '#000000';
+        $btnUrl = $this->safeUrl($data['button_url'] ?? '#');
+        $bgImage = $this->safeUrl($data['background_image'] ?? '', true);
+        $overlay = preg_match('/^#[0-9a-fA-F]{6}$/', (string) ($data['overlay_color'] ?? ''))
+            ? $data['overlay_color']
+            : '#000000';
 
-        $bgStyle = $bgImage ? "background-image: url('$bgImage'); background-size: cover;" : 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);';
+        return view('public.widgets.hero', compact('title', 'subtitle', 'btnText', 'btnUrl', 'bgImage', 'overlay'))->render();
+    }
 
-        return view('public.widgets.hero', compact('title', 'subtitle', 'btnText', 'btnUrl', 'bgStyle', 'overlay'))->render();
+    private function safeUrl(string $url, bool $allowEmpty = false): string
+    {
+        if ($allowEmpty && $url === '') {
+            return '';
+        }
+        if (str_starts_with($url, '/') || str_starts_with($url, '#')) {
+            return $url;
+        }
+
+        return filter_var($url, FILTER_VALIDATE_URL) && in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true)
+            ? $url
+            : '#';
     }
 }

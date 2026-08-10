@@ -4,63 +4,31 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $adminRole = Role::where('name', 'admin')->first();
-        $cmsEditorRole = Role::where('name', 'cms_editor')->first();
-        $emailManagerRole = Role::where('name', 'email_manager')->first();
-        $hrManagerRole = Role::where('name', 'hr_manager')->first();
-        $employeeRole = Role::where('name', 'employee')->first();
+        $email = env('SEED_ADMIN_EMAIL');
+        $password = env('SEED_ADMIN_PASSWORD');
+        if (!$email && !$password) {
+            $this->command?->warn('Admin user not seeded. Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD explicitly.');
+            return;
+        }
+        if (!$email || !$password || strlen($password) < 12) {
+            throw new RuntimeException('Seed admin credentials must include a valid email and password of at least 12 characters.');
+        }
 
-        // Admin User
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@kanggui-rcm.com',
-            'password' => Hash::make('password123'),
-            'role_id' => $adminRole?->id,
-            'is_active' => true,
-        ]);
-
-        // CMS Editor
-        User::create([
-            'name' => 'CMS Editor',
-            'email' => 'editor@kanggui-rcm.com',
-            'password' => Hash::make('password123'),
-            'role_id' => $cmsEditorRole?->id,
-            'is_active' => true,
-        ]);
-
-        // Email Manager
-        User::create([
-            'name' => 'Email Manager',
-            'email' => 'email@kanggui-rcm.com',
-            'password' => Hash::make('password123'),
-            'role_id' => $emailManagerRole?->id,
-            'is_active' => true,
-        ]);
-
-        // HR Manager
-        User::create([
-            'name' => 'HR Manager',
-            'email' => 'hr@kanggui-rcm.com',
-            'password' => Hash::make('password123'),
-            'role_id' => $hrManagerRole?->id,
-            'is_active' => true,
-        ]);
-
-        // Employee
-        User::create([
-            'name' => 'John Employee',
-            'email' => 'employee@kanggui-rcm.com',
-            'password' => Hash::make('password123'),
-            'role_id' => $employeeRole?->id,
+        $role = Role::query()->where('name', 'admin')->firstOrFail();
+        User::query()->updateOrCreate(['email' => $email], [
+            'name' => env('SEED_ADMIN_NAME', 'Administrator'),
+            'password' => Hash::make($password),
+            'role_id' => $role->id,
             'is_active' => true,
         ]);
     }

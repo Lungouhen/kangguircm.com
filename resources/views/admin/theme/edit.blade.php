@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.admin')
 
 @section('title', 'Theme Customizer')
 
@@ -18,16 +18,16 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Settings Form -->
             <div class="lg:col-span-2">
-                <form action="{{ route('admin.theme.update') }}" method="POST" class="bg-white rounded-lg shadow p-6">
+                <form action="{{ route('admin.theme.save') }}" method="POST" class="bg-white rounded-lg shadow p-6">
                     @csrf
-                    
+
                     <div class="mb-6">
                         <label for="primary_color" class="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
                         <div class="flex items-center space-x-3">
-                            <input type="color" name="primary_color" id="primary_color" 
+                            <input type="color" name="primary_color" id="primary_color"
                                    value="{{ old('primary_color', $settings['primary_color'] ?? '#3B82F6') }}"
                                    class="h-10 w-16 border border-gray-300 rounded cursor-pointer">
-                            <input type="text" name="primary_color_text" 
+                            <input type="text" name="primary_color_text"
                                    value="{{ old('primary_color', $settings['primary_color'] ?? '#3B82F6') }}"
                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" readonly>
                         </div>
@@ -36,10 +36,10 @@
                     <div class="mb-6">
                         <label for="secondary_color" class="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
                         <div class="flex items-center space-x-3">
-                            <input type="color" name="secondary_color" id="secondary_color" 
+                            <input type="color" name="secondary_color" id="secondary_color"
                                    value="{{ old('secondary_color', $settings['secondary_color'] ?? '#10B981') }}"
                                    class="h-10 w-16 border border-gray-300 rounded cursor-pointer">
-                            <input type="text" name="secondary_color_text" 
+                            <input type="text" name="secondary_color_text"
                                    value="{{ old('secondary_color', $settings['secondary_color'] ?? '#10B981') }}"
                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" readonly>
                         </div>
@@ -47,7 +47,7 @@
 
                     <div class="mb-6">
                         <label for="font_family" class="block text-sm font-medium text-gray-700 mb-2">Font Family</label>
-                        <select name="font_family" id="font_family" 
+                        <select name="font_family" id="font_family"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                             <option value="Inter, sans-serif" {{ (old('font_family', $settings['font_family'] ?? '') == 'Inter, sans-serif') ? 'selected' : '' }}>Inter</option>
                             <option value="Poppins, sans-serif" {{ (old('font_family', $settings['font_family'] ?? '') == 'Poppins, sans-serif') ? 'selected' : '' }}>Poppins</option>
@@ -61,13 +61,13 @@
                         <label for="layout_width" class="block text-sm font-medium text-gray-700 mb-2">Layout Width</label>
                         <div class="flex space-x-4">
                             <label class="flex items-center">
-                                <input type="radio" name="layout_width" value="boxed" 
+                                <input type="radio" name="layout_width" value="boxed"
                                        {{ old('layout_width', $settings['layout_width'] ?? 'full') == 'boxed' ? 'checked' : '' }}
                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                 <span class="ml-2 text-sm text-gray-700">Boxed</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="layout_width" value="full" 
+                                <input type="radio" name="layout_width" value="full"
                                        {{ old('layout_width', $settings['layout_width'] ?? 'full') == 'full' ? 'checked' : '' }}
                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                 <span class="ml-2 text-sm text-gray-700">Full Width</span>
@@ -79,13 +79,13 @@
                         <label for="border_radius" class="block text-sm font-medium text-gray-700 mb-2">Border Radius</label>
                         <div class="flex space-x-4">
                             <label class="flex items-center">
-                                <input type="radio" name="border_radius" value="sharp" 
+                                <input type="radio" name="border_radius" value="sharp"
                                        {{ old('border_radius', $settings['border_radius'] ?? 'rounded') == 'sharp' ? 'checked' : '' }}
                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                 <span class="ml-2 text-sm text-gray-700">Sharp (0px)</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="border_radius" value="rounded" 
+                                <input type="radio" name="border_radius" value="rounded"
                                        {{ old('border_radius', $settings['border_radius'] ?? 'rounded') == 'rounded' ? 'checked' : '' }}
                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
                                 <span class="ml-2 text-sm text-gray-700">Rounded (8px)</span>
@@ -95,7 +95,7 @@
 
                     <div class="mb-6">
                         <label class="flex items-center">
-                            <input type="checkbox" name="dark_mode" value="1" 
+                            <input type="checkbox" name="dark_mode" value="1"
                                    {{ old('dark_mode', $settings['dark_mode'] ?? false) ? 'checked' : '' }}
                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             <span class="ml-2 text-sm text-gray-700">Enable Dark Mode</span>
@@ -103,7 +103,7 @@
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="submit" 
+                        <button type="submit"
                                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Save Theme Settings
                         </button>
@@ -143,13 +143,13 @@ document.addEventListener('alpine:init', () => {
         secondaryColor: '{{ old("secondary_color", $settings["secondary_color"] ?? "#10B981") }}',
         fontFamily: '{{ old("font_family", $settings["font_family"] ?? "Inter, sans-serif") }}',
         borderRadius: '{{ old("border_radius", $settings["border_radius"] ?? "rounded") }}',
-        
+
         init() {
             this.$watch('primaryColor', value => {
                 document.querySelector('[name="primary_color"]').value = value;
                 document.querySelector('[name="primary_color_text"]').value = value;
             });
-            
+
             this.$watch('secondaryColor', value => {
                 document.querySelector('[name="secondary_color"]').value = value;
                 document.querySelector('[name="secondary_color_text"]').value = value;

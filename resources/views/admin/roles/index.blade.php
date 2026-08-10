@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.admin')
 
 @section('title', 'Roles & Permissions')
 
@@ -6,7 +6,7 @@
 <div class="p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Roles & Permissions</h1>
-        <a href="{{ route('admin.roles.create') }}" 
+        <a href="{{ route('admin.roles.create') }}"
            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             + Create Role
         </a>
@@ -46,7 +46,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="{{ route('admin.roles.edit', $role) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" class="inline" 
+                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" class="inline"
                               onsubmit="return confirm('Are you sure?');">
                             @csrf
                             @method('DELETE')

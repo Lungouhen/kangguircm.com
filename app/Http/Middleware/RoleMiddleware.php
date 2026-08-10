@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
@@ -17,7 +18,12 @@ class RoleMiddleware
         }
 
         if (!$request->user()->hasRole($role)) {
-            abort(403, 'Unauthorized action. Required role: ' . $role);
+            Log::warning('Role boundary denied access.', [
+                'user_id' => $request->user()->id,
+                'required_role' => $role,
+                'route' => $request->route()?->getName(),
+            ]);
+            abort(403, 'You are not authorized to access this resource.');
         }
 
         return $next($request);

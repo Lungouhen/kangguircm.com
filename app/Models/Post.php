@@ -20,6 +20,10 @@ class Post extends Model
         'content',
         'excerpt',
         'featured_image',
+        'meta_title',
+        'meta_description',
+        'canonical_url',
+        'noindex',
         'status',
         'published_at',
         'author_id',
@@ -27,6 +31,7 @@ class Post extends Model
     ];
 
     protected $casts = [
+        'noindex' => 'boolean',
         'published_at' => 'datetime',
         'views' => 'integer',
     ];

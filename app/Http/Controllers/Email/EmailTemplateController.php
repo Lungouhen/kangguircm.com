@@ -26,8 +26,8 @@ class EmailTemplateController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
-            'body_html' => 'required|string',
-            'body_text' => 'nullable|string',
+            'html_content' => 'required|string',
+            'text_content' => 'nullable|string',
         ]);
 
         EmailTemplate::create($validated);
@@ -51,8 +51,8 @@ class EmailTemplateController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
-            'body_html' => 'required|string',
-            'body_text' => 'nullable|string',
+            'html_content' => 'required|string',
+            'text_content' => 'nullable|string',
         ]);
 
         $template->update($validated);

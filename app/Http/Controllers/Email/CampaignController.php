@@ -9,6 +9,7 @@ use App\Models\Campaign;
 use App\Models\SubscriberList;
 use App\Repositories\CampaignRepository;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CampaignController extends Controller
@@ -29,23 +30,73 @@ class CampaignController extends Controller
         return view('email.campaigns.create', compact('lists'));
     }
 
-    public function store(array $data): Campaign
+    public function store(Request $request): RedirectResponse
     {
-        return $this->campaignRepository->create($data);
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'subject' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string'],
+            'lists' => ['nullable', 'array'],
+            'lists.*' => ['integer', 'exists:subscriber_lists,id'],
+        ]);
+        $data['created_by'] = $request->user()->id;
+        $data['from_name'] = config('mail.from.name', config('app.name'));
+        $data['from_email'] = config('mail.from.address', 'noreply@example.com');
+
+        $campaign = $this->campaignRepository->create($data);
+
+        return redirect()
+            ->route('admin.email.campaigns.index')
+            ->with('success', "Campaign {$campaign->name} created.");
+    }
+
+    public function show(Campaign $campaign): View
+    {
+        $campaign->load(['creator', 'lists']);
+
+        return view('email.campaigns.show', compact('campaign'));
+    }
+
+    public function edit(Campaign $campaign): View
+    {
+        $lists = SubscriberList::all();
+
+        return view('email.campaigns.create', compact('campaign', 'lists'));
+    }
+
+    public function update(Request $request, Campaign $campaign): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'subject' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string'],
+            'lists' => ['nullable', 'array'],
+            'lists.*' => ['integer', 'exists:subscriber_lists,id'],
+        ]);
+
+        $campaign->update([
+            'name' => $data['name'],
+            'subject' => $data['subject'],
+            'html_content' => $data['content'],
+        ]);
+        $campaign->lists()->sync($data['lists'] ?? []);
+
+        return redirect()->route('admin.email.campaigns.show', $campaign)
+            ->with('success', 'Campaign updated.');
     }
 
     public function send(int $id): RedirectResponse
     {
         $campaign = $this->campaignRepository->find($id);
-        
+
         if (!$campaign) {
             abort(404);
         }
-        
+
         $this->campaignRepository->send($campaign);
-        
+
         return redirect()
-            ->route('admin.campaigns.index')
+            ->route('admin.email.campaigns.index')
             ->with('success', 'Campaign is being sent.');
     }
 }

@@ -11,40 +11,25 @@ class AttendanceRepository
 {
     public function clockIn(int $employeeId, array $data = []): Attendance
     {
-        return DB::transaction(function () use ($employeeId, $data) {
-            return Attendance::create([
-                'employee_id' => $employeeId,
-                'clock_in' => now(),
-                'clock_in_ip' => request()->ip(),
-                'clock_in_user_agent' => request()->userAgent(),
-                'date' => today(),
-                ...$data,
-            ]);
-        });
+        return DB::transaction(fn () => Attendance::query()->updateOrCreate(
+            ['employee_id' => $employeeId, 'date' => today()],
+            ['clock_in' => now(), 'status' => Attendance::STATUS_PRESENT, ...$data]
+        ));
     }
 
     public function clockOut(int $attendanceId, array $data = []): Attendance
     {
-        return DB::transaction(function () use ($attendanceId, $data) {
+        return DB::transaction(function () use ($attendanceId, $data): Attendance {
             $attendance = Attendance::findOrFail($attendanceId);
-            
-            $attendance->update([
-                'clock_out' => now(),
-                'clock_out_ip' => request()->ip(),
-                'clock_out_user_agent' => request()->userAgent(),
-                ...$data,
-            ]);
-
-            return $attendance;
+            $attendance->update(['clock_out' => now(), ...$data]);
+            $attendance->update(['total_hours' => $attendance->fresh()->calculateHours()]);
+            return $attendance->fresh();
         });
     }
 
     public function getTodayAttendances(int $employeeId)
     {
-        return Attendance::where('employee_id', $employeeId)
-            ->where('date', today())
-            ->latest()
-            ->get();
+        return Attendance::where('employee_id', $employeeId)->whereDate('date', today())->latest('clock_in')->get();
     }
 
     public function getMonthlyAttendances(int $employeeId, string $month)
@@ -52,7 +37,6 @@ class AttendanceRepository
         return Attendance::where('employee_id', $employeeId)
             ->whereYear('date', substr($month, 0, 4))
             ->whereMonth('date', substr($month, 5, 2))
-            ->orderBy('date', 'desc')
-            ->get();
+            ->orderByDesc('date')->get();
     }
 }
