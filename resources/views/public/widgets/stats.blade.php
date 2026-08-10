@@ -1,0 +1,1 @@
+<section class="grid md:grid-cols-4 gap-6 py-12">@foreach(($stats ?? []) as $stat)<div class="text-center"><strong class="text-4xl">{{ $stat['number'] ?? '' }}</strong><div>{{ $stat['label'] ?? '' }}</div></div>@endforeach</section>

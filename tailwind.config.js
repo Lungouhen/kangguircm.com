@@ -8,6 +8,7 @@ export default {
         './resources/views/**/*.blade.php',
     ],
     darkMode: 'class',
+    safelist: Array.from({ length: 12 }, (_, index) => `md:col-span-${index + 1}`),
     theme: {
         extend: {
             fontFamily: {

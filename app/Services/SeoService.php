@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Post;
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\URL;
 
 class SeoService
@@ -21,8 +22,8 @@ class SeoService
     ): array {
         $defaults = [
             'title' => config('app.name'),
-            'description' => 'KangGui RCM - CMS, Email Marketing & HRM Platform',
-            'image' => asset('images/og-default.jpg'),
+            'description' => 'Revenue cycle management services for medical practices, including billing, coding, denial management, and accounts receivable support.',
+            'image' => SiteSetting::valueOf('default_social_image', asset('images/og-default.jpg')),
             'url' => URL::current(),
             'type' => $type,
         ];
@@ -33,7 +34,7 @@ class SeoService
             'image' => $image ?: $defaults['image'],
             'url' => $url ?: $defaults['url'],
             'type' => $type,
-            'site_name' => config('app.name'),
+            'site_name' => SiteSetting::valueOf('site_name', config('app.name')),
             'twitter_card' => 'summary_large_image',
         ];
     }
@@ -48,7 +49,7 @@ class SeoService
             '@type' => 'Article',
             'headline' => $post->title,
             'description' => $post->excerpt ?? substr(strip_tags($post->content), 0, 160),
-            'image' => $post->featured_image ? asset($post->featured_image) : null,
+            'image' => $post->featured_image ? asset('storage/'.$post->featured_image) : SiteSetting::valueOf('default_social_image', asset('images/og-default.jpg')),
             'datePublished' => $post->published_at?->toIso8601String() ?? $post->created_at->toIso8601String(),
             'dateModified' => $post->updated_at->toIso8601String(),
             'author' => [
@@ -57,10 +58,10 @@ class SeoService
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => config('app.name'),
+                'name' => SiteSetting::valueOf('site_name', config('app.name')),
                 'logo' => [
                     '@type' => 'ImageObject',
-                    'url' => asset('images/logo.png'),
+                    'url' => SiteSetting::valueOf('site_logo', asset('images/logo.svg')),
                 ],
             ],
         ];
@@ -74,14 +75,9 @@ class SeoService
         return [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'name' => config('app.name'),
+            'name' => SiteSetting::valueOf('site_name', config('app.name')),
             'url' => config('app.url'),
-            'logo' => asset('images/logo.png'),
-            'contactPoint' => [
-                '@type' => 'ContactPoint',
-                'telephone' => '+1-000-000-0000',
-                'contactType' => 'customer service',
-            ],
+            'logo' => SiteSetting::valueOf('site_logo', asset('images/logo.svg')),
         ];
     }
 

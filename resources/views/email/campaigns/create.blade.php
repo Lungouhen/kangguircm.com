@@ -6,8 +6,9 @@
         <a href="{{ route('admin.email.campaigns.index') }}" class="text-blue-600 hover:text-blue-800">&larr; Back to Campaigns</a>
         <h1 class="text-2xl font-bold text-gray-900 mt-2">Create New Campaign</h1>
     </div>
-    <form action="{{ route('admin.email.campaigns.store') }}" method="POST" class="bg-white shadow rounded-lg p-6 space-y-6">
+    <form action="{{ isset($campaign) ? route('admin.email.campaigns.update', $campaign) : route('admin.email.campaigns.store') }}" method="POST" class="bg-white shadow rounded-lg p-6 space-y-6">
         @csrf
+        @isset($campaign) @method('PUT') @endisset
         <div>
             <label class="block text-sm font-medium text-gray-700">Campaign Name</label>
             <input type="text" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror" value="{{ old('name') }}">

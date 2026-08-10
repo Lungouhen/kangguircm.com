@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,43 +9,44 @@ use Illuminate\Support\Facades\Cache;
 
 class ThemeSetting extends Model
 {
-    protected $fillable = ['key', 'value', 'type', 'group'];
+    protected $fillable = ['key', 'value'];
 
-    protected $casts = [
-        'value' => 'string', // Keep as string, decode manually if JSON
-    ];
-
-    public static function get($key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
-        $setting = self::where('key', $key)->first();
-        if (!$setting) {
+        [$root, $nested] = array_pad(explode('.', $key, 2), 2, null);
+        $value = Cache::rememberForever("theme_setting.{$root}", function () use ($root): mixed {
+            $stored = self::query()->where('key', $root)->value('value');
+            if ($stored === null) {
+                return null;
+            }
+
+            $decoded = json_decode((string) $stored, true);
+
+            return json_last_error() === JSON_ERROR_NONE ? $decoded : $stored;
+        });
+
+        if ($value === null) {
             return $default;
         }
 
-        // Decode JSON if type is json
-        if ($setting->type === 'json') {
-            return json_decode($setting->value, true) ?? $setting->value;
-        }
-
-        // Cast booleans
-        if ($setting->type === 'boolean') {
-            return (bool) $setting->value;
-        }
-
-        return $setting->value;
+        return $nested ? data_get($value, $nested, $default) : $value;
     }
 
-    public static function set($key, $value, $type = 'string', $group = 'general')
+    public static function set(string $key, mixed $value): self
     {
-        $encodedValue = is_array($value) ? json_encode($value) : $value;
-        return self::updateOrCreate(
+        $setting = self::query()->updateOrCreate(
             ['key' => $key],
-            ['value' => $encodedValue, 'type' => $type, 'group' => $group]
+            ['value' => json_encode($value, JSON_THROW_ON_ERROR)]
         );
+        Cache::forget("theme_setting.{$key}");
+
+        return $setting;
     }
 
-    public static function flushCache()
+    public static function flushCache(): void
     {
-        // Cache flushing handled by observer or manual call
+        foreach (self::query()->pluck('key') as $key) {
+            Cache::forget("theme_setting.{$key}");
+        }
     }
 }

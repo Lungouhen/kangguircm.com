@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-900">Employees</h1>
-        <a href="{{ route('admin.hrm.employees.create') }}" class="btn-primary">Add Employee</a>
+        <a href="{{ route('admin.hrm.employees.index') }}" class="btn-primary">Add Employee</a>
     </div>
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <table class="min-w-full divide-y divide-gray-200">
@@ -38,7 +38,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="{{ route('admin.hrm.employees.show', $employee) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
-                        <a href="{{ route('admin.hrm.employees.edit', $employee) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        <a href="{{ route('admin.hrm.employees.show', $employee) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                     </td>
                 </tr>
                 @empty

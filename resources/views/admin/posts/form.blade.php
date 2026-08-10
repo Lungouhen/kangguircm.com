@@ -9,7 +9,7 @@
             {{ isset($post) ? 'Edit Post' : 'Create New Post' }}
         </h2>
 
-        <form action="{{ isset($post) ? route('admin.posts.update', $post) : route('admin.posts.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ isset($post) ? route('admin.cms.posts.update', $post) : route('admin.cms.posts.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @if(isset($post)) @method('PUT') @endif
 
@@ -77,7 +77,7 @@
                     <select name="category_ids[]" multiple
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 h-32">
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" 
+                            <option value="{{ $category->id }}"
                                 {{ in_array($category->id, old('category_ids', $post?->categories->pluck('id')->toArray() ?? [])) ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
@@ -117,7 +117,7 @@
 
             <!-- Actions -->
             <div class="flex justify-end space-x-3 pt-6">
-                <a href="{{ route('admin.posts.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <a href="{{ route('admin.cms.posts.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                     Cancel
                 </a>
                 <button type="submit" class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700">

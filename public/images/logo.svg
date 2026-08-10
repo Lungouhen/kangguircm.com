@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" role="img" aria-labelledby="title">
+  <title id="title">KangGui RCM</title>
+  <rect width="64" height="64" rx="14" fill="#2563eb"/>
+  <path d="M18 15v34h8V35l15 14h11L34 32l17-17H40L26 29V15z" fill="#fff"/>
+  <text x="76" y="41" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#111827">KangGui RCM</text>
+</svg>

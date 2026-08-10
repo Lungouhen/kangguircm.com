@@ -59,6 +59,7 @@ class RolePermissionSeeder extends Seeder
             
             ['name' => 'media.upload', 'display_name' => 'Upload Media'],
             ['name' => 'media.delete', 'display_name' => 'Delete Media'],
+            ['name' => 'forms.manage', 'display_name' => 'Manage Forms and Submissions'],
 
             // Email Marketing Permissions
             ['name' => 'subscribers.view', 'display_name' => 'View Subscribers'],
@@ -94,7 +95,7 @@ class RolePermissionSeeder extends Seeder
         $cmsEditor->syncPermissions([
             'posts.view', 'posts.create', 'posts.edit', 'posts.delete', 'posts.publish',
             'pages.view', 'pages.create', 'pages.edit', 'pages.delete',
-            'media.upload', 'media.delete',
+            'media.upload', 'media.delete', 'forms.manage',
         ]);
 
         $emailManager->syncPermissions([

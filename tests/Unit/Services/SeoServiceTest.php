@@ -40,7 +40,7 @@ class SeoServiceTest extends TestCase
         $meta = SeoService::generateMeta('', '', null, null);
 
         $this->assertEquals('Test App', $meta['title']);
-        $this->assertEquals('KangGui RCM - CMS, Email Marketing & HRM Platform', $meta['description']);
+        $this->assertStringContainsString('Revenue cycle management services', $meta['description']);
         $this->assertArrayHasKey('image', $meta);
         $this->assertArrayHasKey('url', $meta);
         $this->assertEquals('website', $meta['type']);
@@ -143,9 +143,11 @@ class SeoServiceTest extends TestCase
      */
     public function test_article_schema_handles_missing_author(): void
     {
-        $post = Post::factory()->create([
+        $post = Post::factory()->make([
             'title' => 'Test Article',
             'author_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         $schema = SeoService::articleSchema($post);
@@ -165,8 +167,7 @@ class SeoServiceTest extends TestCase
         $this->assertEquals('Test App', $schema['name']);
         $this->assertEquals('https://test.example.com', $schema['url']);
         $this->assertArrayHasKey('logo', $schema);
-        $this->assertArrayHasKey('contactPoint', $schema);
-        $this->assertEquals('customer service', $schema['contactPoint']['contactType']);
+        $this->assertArrayNotHasKey('contactPoint', $schema, 'Unverified contact details must not be emitted.');
     }
 
     /**

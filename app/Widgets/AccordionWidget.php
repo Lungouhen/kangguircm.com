@@ -4,6 +4,7 @@ namespace App\Widgets;
 
 class AccordionWidget implements WidgetInterface
 {
+    use LegacyWidgetAdapter;
     public function identifier(): string
     {
         return 'accordion';

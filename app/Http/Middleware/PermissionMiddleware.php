@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class PermissionMiddleware
@@ -17,7 +18,12 @@ class PermissionMiddleware
         }
 
         if (!$request->user()->hasPermission($permission)) {
-            abort(403, 'Unauthorized action. Required permission: ' . $permission);
+            Log::warning('Permission denied.', [
+                'user_id' => $request->user()->id,
+                'permission' => $permission,
+                'route' => $request->route()?->getName(),
+            ]);
+            abort(403, 'You are not authorized to perform this action.');
         }
 
         return $next($request);

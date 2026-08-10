@@ -1,5 +1,5 @@
 <section class="relative py-24 overflow-hidden">
-    <div class="absolute inset-0 z-0" style="{!! $bgStyle !!}">
+    <div class="absolute inset-0 z-0 bg-gradient-to-br from-indigo-500 to-purple-700 bg-cover bg-center" @if($bgImage) style="background-image: url('{{ $bgImage }}')" @endif>
         <div class="absolute inset-0" style="background-color: {{ $overlay }}; opacity: 0.7;"></div>
     </div>
     

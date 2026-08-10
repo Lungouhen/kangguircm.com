@@ -45,6 +45,8 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended(route('admin.hrm.attendances.index'));
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('admin.hrm.employees.index'));
     }
 }

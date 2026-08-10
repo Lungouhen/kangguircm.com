@@ -9,7 +9,7 @@
         <p class="page-header__subtitle">Manage your blog content</p>
     </div>
     <div class="page-header__actions">
-        <a href="{{ route('admin.posts.create') }}" class="btn btn--primary">
+        <a href="{{ route('admin.cms.posts.create') }}" class="btn btn--primary">
             <span class="btn__icon">+</span>
             New Post
         </a>
@@ -61,39 +61,39 @@
                                 {{ $post->published_at?->format('M d, Y') ?? '-' }}
                             </td>
                             <td class="table__cell">
-                                {{ $post->view_count }}
+                                {{ $post->views }}
                             </td>
                             <td class="table__cell">
                                 <div class="action-buttons">
-                                    <a href="{{ route('admin.posts.show', $post->id) }}" 
+                                    <a href="{{ route('admin.cms.posts.show', $post->id) }}"
                                        class="btn btn--sm btn--outline"
                                        title="View">
                                         👁
                                     </a>
-                                    <a href="{{ route('admin.posts.edit', $post->id) }}" 
+                                    <a href="{{ route('admin.cms.posts.edit', $post->id) }}"
                                        class="btn btn--sm btn--outline"
                                        title="Edit">
                                         ✏️
                                     </a>
                                     @if($post->status === 'draft')
-                                        <form action="{{ route('admin.posts.publish', $post->id) }}" 
-                                              method="POST" 
+                                        <form action="{{ route('admin.cms.posts.publish', $post->id) }}"
+                                              method="POST"
                                               style="display: inline;">
                                             @csrf
-                                            <button type="submit" 
+                                            <button type="submit"
                                                     class="btn btn--sm btn--success"
                                                     title="Publish">
                                                 🚀
                                             </button>
                                         </form>
                                     @endif
-                                    <form action="{{ route('admin.posts.destroy', $post->id) }}" 
-                                          method="POST" 
+                                    <form action="{{ route('admin.cms.posts.destroy', $post->id) }}"
+                                          method="POST"
                                           style="display: inline;"
                                           onsubmit="return confirm('Are you sure you want to delete this post?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 class="btn btn--sm btn--danger"
                                                 title="Delete">
                                             🗑️
@@ -105,14 +105,14 @@
                     @empty
                         <tr>
                             <td colspan="8" class="table__cell table__cell--center">
-                                No posts found. <a href="{{ route('admin.posts.create') }}">Create your first post</a>.
+                                No posts found. <a href="{{ route('admin.cms.posts.create') }}">Create your first post</a>.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        
+
         <div class="pagination-container">
             {{ $posts->links() }}
         </div>

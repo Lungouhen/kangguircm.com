@@ -36,7 +36,7 @@
     </div>
     <div class="bg-white shadow rounded-lg p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Email Content Preview</h3>
-        <div class="border rounded p-4 bg-gray-50">{!! $campaign->content !!}</div>
+        <pre class="border rounded p-4 bg-gray-50 whitespace-pre-wrap overflow-auto">{{ $campaign->html_content }}</pre>
     </div>
 </div>
 @endsection

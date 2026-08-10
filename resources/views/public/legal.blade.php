@@ -1,0 +1,3 @@
+@extends('layouts.app')
+@section('seo')<x-seo-meta :title="$policy->title" :description="$policy->title.' — effective '.$policy->effective_at->format('F j, Y')" :url="route('legal.show',$policy->slug)" />@endsection
+@section('content')<article class="py-16"><div class="max-w-3xl mx-auto px-6"><header><p class="text-sm text-slate-500">Version {{ $policy->version }} · Effective <time datetime="{{ $policy->effective_at->toDateString() }}">{{ $policy->effective_at->format('F j, Y') }}</time></p><h1 class="text-4xl font-bold mt-3">{{ $policy->title }}</h1></header><div class="mt-10 prose prose-slate max-w-none whitespace-pre-wrap">{{ $policy->content }}</div></div></article>@endsection

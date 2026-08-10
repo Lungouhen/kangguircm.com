@@ -49,7 +49,7 @@
         </div>
         <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-                <a href="{{ route('admin.email.subscribers.index') }}" class="font-medium text-blue-600 hover:text-blue-500">View all</a>
+                <a href="{{ route('admin.email.lists.index') }}" class="font-medium text-blue-600 hover:text-blue-500">View all</a>
             </div>
         </div>
     </div>
@@ -124,7 +124,7 @@
                                         {{ $post->status }} • {{ $post->created_at->diffForHumans() }}
                                     </p>
                                 </div>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     {{ $post->status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                     {{ ucfirst($post->status) }}
                                 </span>
@@ -167,14 +167,14 @@
                     <span class="ml-3 text-sm font-medium text-gray-700">New Campaign</span>
                 </a>
 
-                <a href="{{ route('admin.hrm.employees.create') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <a href="{{ route('admin.hrm.employees.index') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>
                     <span class="ml-3 text-sm font-medium text-gray-700">Add Employee</span>
                 </a>
 
-                <a href="{{ route('admin.email.subscribers.create') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <a href="{{ route('admin.email.lists.create') }}" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>
@@ -209,15 +209,15 @@
                                     <div class="text-sm font-medium text-gray-900">{{ $attendance->employee->user->name }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $attendance->check_in ? $attendance->check_in->format('H:i') : '-' }}
+                                    {{ $attendance->clock_in ? $attendance->clock_in->format('H:i') : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ $attendance->check_out ? $attendance->check_out->format('H:i') : '-' }}
+                                    {{ $attendance->clock_out ? $attendance->clock_out->format('H:i') : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        {{ $attendance->check_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                        {{ $attendance->check_out ? 'Completed' : 'Present' }}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {{ $attendance->clock_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                        {{ $attendance->clock_out ? 'Completed' : 'Present' }}
                                     </span>
                                 </td>
                             </tr>

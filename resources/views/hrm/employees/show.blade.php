@@ -5,7 +5,7 @@
     <div class="flex justify-between items-center">
         <a href="{{ route('admin.hrm.employees.index') }}" class="text-blue-600 hover:text-blue-800">&larr; Back to Employees</a>
         <div class="space-x-2">
-            <a href="{{ route('admin.hrm.employees.edit', $employee) }}" class="btn-primary">Edit</a>
+            <a href="{{ route('admin.hrm.employees.show', $employee) }}" class="btn-primary">Edit</a>
             <form action="{{ route('admin.hrm.attendances.clock-in', $employee) }}" method="POST" class="inline">
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Clock In</button>
@@ -22,7 +22,7 @@
             <div><span class="font-medium">Email:</span> <span class="text-gray-600">{{ $employee->user->email }}</span></div>
             <div><span class="font-medium">Phone:</span> <span class="text-gray-600">{{ $employee->phone ?? 'N/A' }}</span></div>
             <div><span class="font-medium">Hire Date:</span> <span class="text-gray-600">{{ $employee->hire_date }}</span></div>
-            <div><span class="font-medium">Salary:</span> <span class="text-gray-600">${{ number_format($employee->salary, 2) }}</span></div>
+            <div><span class="font-medium">Status:</span> <span class="text-gray-600">{{ str($employee->status)->headline() }}</span></div>
             <div><span class="font-medium">Status:</span> <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $employee->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">{{ ucfirst($employee->status) }}</span></div>
         </div>
     </div>

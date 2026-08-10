@@ -23,12 +23,12 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($payrolls as $payroll)
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $payroll->period }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $payroll->period_start->format('M j').' – '.$payroll->period_end->format('M j, Y') }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $payroll->employee->user->name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ number_format($payroll->base_salary, 2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ number_format($payroll->basic_salary, 2) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">+${{ number_format($payroll->allowances, 2) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">-${{ number_format($payroll->deductions, 2) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${{ number_format($payroll->net_pay, 2) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${{ number_format($payroll->net_salary, 2) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $payroll->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">{{ ucfirst($payroll->status) }}</span></td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><a href="{{ route('admin.hrm.payrolls.show', $payroll) }}" class="text-blue-600 hover:text-blue-900">View</a></td>
                 </tr>

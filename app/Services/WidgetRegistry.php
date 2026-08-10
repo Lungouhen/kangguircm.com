@@ -1,76 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Models\SiteSetting;
+use App\Widgets\WidgetInterface;
 use Illuminate\Support\Facades\File;
+use ReflectionClass;
 
 class WidgetRegistry
 {
-    protected array $widgets = [];
+    /** @var array<string, WidgetInterface> */
+    private array $widgets = [];
 
     public function __construct()
     {
         $this->discoverWidgets();
     }
 
-    /**
-     * Auto-discover all widget classes in app/Widgets
-     */
-    protected function discoverWidgets(): void
+    private function discoverWidgets(): void
     {
-        $widgetPath = app_path('Widgets');
-        
-        if (!File::exists($widgetPath)) {
+        $path = app_path('Widgets');
+        if (!File::isDirectory($path)) {
             return;
         }
 
-        $files = File::files($widgetPath);
-
-        foreach ($files as $file) {
-            $className = 'App\\Widgets\\' . pathinfo($file, PATHINFO_FILENAME);
-            
-            if (class_exists($className)) {
-                $widget = new $className();
-                $this->register($widget);
+        foreach (File::files($path) as $file) {
+            $class = 'App\\Widgets\\'.$file->getFilenameWithoutExtension();
+            if (!class_exists($class)) {
+                continue;
             }
+
+            $reflection = new ReflectionClass($class);
+            if (!$reflection->isInstantiable() || !$reflection->implementsInterface(WidgetInterface::class)) {
+                continue;
+            }
+
+            $this->register($reflection->newInstance());
         }
+
+        $disabled = SiteSetting::valueOf('disabled_widgets', []);
+        if (is_array($disabled)) {
+            $this->widgets = array_diff_key($this->widgets, array_flip($disabled));
+        }
+        ksort($this->widgets);
     }
 
-    /**
-     * Register a widget instance
-     */
-    public function register(object $widget): void
+    public function register(WidgetInterface $widget): void
     {
         $this->widgets[$widget->getId()] = $widget;
     }
 
-    /**
-     * Get all registered widgets
-     */
+    /** @return array<string, WidgetInterface> */
     public function getAll(): array
     {
         return $this->widgets;
     }
 
-    /**
-     * Get a specific widget by ID
-     */
-    public function get(string $id): ?object
+    public function get(string $id): ?WidgetInterface
     {
         return $this->widgets[$id] ?? null;
     }
 
-    /**
-     * Render a widget with data
-     */
     public function render(string $id, array $data = []): string
     {
-        $widget = $this->get($id);
-        
-        if (!$widget) {
-            return '<!-- Widget not found: ' . $id . ' -->';
-        }
-
-        return $widget->render($data);
+        return $this->get($id)?->render($data) ?? '<!-- Unknown widget: '.e($id).' -->';
     }
 }

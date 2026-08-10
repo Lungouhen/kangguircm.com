@@ -1,0 +1,5 @@
+@extends('layouts.admin')
+@section('title','Widget Modules')
+@section('content')
+<div class="p-6 max-w-5xl"><h1 class="text-2xl font-bold">Widget modules</h1><p class="text-slate-500">Enable or disable page-builder modules, similar to a focused WordPress plugin manager.</p>@if(session('success'))<div class="alert alert--success mt-5">{{ session('success') }}</div>@endif<form method="POST" action="{{ route('admin.widgets.update') }}" class="mt-6">@csrf @method('PUT')<div class="grid md:grid-cols-2 gap-4">@foreach($widgets as $id=>$widget)<label class="card p-5 flex gap-4 items-start"><input type="checkbox" name="enabled[]" value="{{ $id }}" @checked(!in_array($id,$disabled??[],true))><span><strong>{{ $widget->getIcon() }} {{ $widget->getName() }}</strong><span class="block text-sm text-slate-500 mt-1">{{ $id }} · {{ count($widget->getFields()) }} configurable fields</span></span></label>@endforeach</div><div class="mt-6 flex justify-end"><button class="btn btn--primary">Save modules</button></div></form></div>
+@endsection

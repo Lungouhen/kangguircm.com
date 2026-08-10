@@ -1,4 +1,4 @@
-@extends('layouts.admin-layout')
+@extends('layouts.admin')
 
 @section('title', 'Audit Logs')
 
@@ -65,7 +65,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ ucfirst($log->log_name) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                             @if($log->event == 'created') bg-green-100 text-green-800
                             @elseif($log->event == 'updated') bg-yellow-100 text-yellow-800
                             @else bg-red-100 text-red-800

@@ -34,12 +34,12 @@ class CampaignRepository
         $campaign = $this->model->create([
             'name' => $data['name'],
             'subject' => $data['subject'],
-            'content_html' => $data['content_html'],
-            'content_text' => $data['content_text'] ?? null,
+            'html_content' => $data['content'],
+            'text_content' => strip_tags($data['content']),
             'from_name' => $data['from_name'],
             'from_email' => $data['from_email'],
             'status' => 'draft',
-            'user_id' => $data['user_id'],
+            'created_by' => $data['created_by'],
         ]);
 
         if (isset($data['lists'])) {
@@ -57,13 +57,13 @@ class CampaignRepository
 
         foreach ($subscribers as $subscriber) {
             try {
-                Mail::raw($campaign->content_html, function ($message) use ($subscriber, $campaign) {
+                Mail::raw($campaign->html_content, function ($message) use ($subscriber, $campaign) {
                     $message->to($subscriber->email)
                             ->subject($campaign->subject)
                             ->from($campaign->from_email, $campaign->from_name);
                 });
 
-                $campaign->tracking()->create([
+                $campaign->emailTrackings()->create([
                     'subscriber_id' => $subscriber->id,
                     'sent_at' => now(),
                     'status' => 'sent',
@@ -71,7 +71,7 @@ class CampaignRepository
 
                 $campaign->increment('sent_count');
             } catch (\Exception $e) {
-                $campaign->tracking()->create([
+                $campaign->emailTrackings()->create([
                     'subscriber_id' => $subscriber->id,
                     'sent_at' => now(),
                     'status' => 'failed',
@@ -82,7 +82,7 @@ class CampaignRepository
         }
 
         $campaign->update([
-            'status' => 'completed',
+            'status' => Campaign::STATUS_SENT,
             'sent_at' => now(),
         ]);
 

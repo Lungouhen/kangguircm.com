@@ -17,8 +17,8 @@ class RoleController extends Controller
 
     public function create()
     {
-        $permissions = Permission::orderBy('group')->orderBy('name')->get();
-        $groupedPermissions = $permissions->groupBy('group');
+        $permissions = Permission::orderBy('name')->get();
+        $groupedPermissions = $permissions->groupBy(fn () => 'General');
         return view('admin.roles.create', compact('groupedPermissions'));
     }
 
@@ -52,10 +52,10 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
-        $permissions = Permission::orderBy('group')->orderBy('name')->get();
-        $groupedPermissions = $permissions->groupBy('group');
+        $permissions = Permission::orderBy('name')->get();
+        $groupedPermissions = $permissions->groupBy(fn () => 'General');
         $rolePermissions = $role->permissions->pluck('id')->toArray();
-        
+
         return view('admin.roles.edit', compact('role', 'groupedPermissions', 'rolePermissions'));
     }
 

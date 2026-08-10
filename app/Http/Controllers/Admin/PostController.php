@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
-use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -21,8 +20,7 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $tags = Tag::all();
-        return view('admin.posts.form', compact('categories', 'tags'));
+        return view('admin.posts.form', compact('categories'));
     }
 
     public function store(Request $request)
@@ -36,7 +34,6 @@ class PostController extends Controller
             'status' => 'required|in:draft,published,scheduled',
             'published_at' => 'nullable|date',
             'category_ids' => 'nullable|array',
-            'tag_ids' => 'nullable|array',
             'meta_title' => 'nullable|string|max:60',
             'meta_description' => 'nullable|string|max:160',
         ]);
@@ -55,19 +52,14 @@ class PostController extends Controller
             $post->categories()->sync($request->category_ids);
         }
 
-        if ($request->has('tag_ids')) {
-            $post->tags()->sync($request->tag_ids);
-        }
-
-        return redirect()->route('admin.posts.index')->with('success', 'Post created successfully.');
+        return redirect()->route('admin.cms.posts.index')->with('success', 'Post created successfully.');
     }
 
     public function edit(Post $post)
     {
         $categories = Category::all();
-        $tags = Tag::all();
-        $post->load(['categories', 'tags']);
-        return view('admin.posts.form', compact('post', 'categories', 'tags'));
+        $post->load('categories');
+        return view('admin.posts.form', compact('post', 'categories'));
     }
 
     public function update(Request $request, Post $post)
@@ -81,7 +73,6 @@ class PostController extends Controller
             'status' => 'required|in:draft,published,scheduled',
             'published_at' => 'nullable|date',
             'category_ids' => 'nullable|array',
-            'tag_ids' => 'nullable|array',
             'meta_title' => 'nullable|string|max:60',
             'meta_description' => 'nullable|string|max:160',
         ]);
@@ -99,16 +90,12 @@ class PostController extends Controller
             $post->categories()->sync($request->category_ids);
         }
 
-        if ($request->has('tag_ids')) {
-            $post->tags()->sync($request->tag_ids);
-        }
-
-        return redirect()->route('admin.posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->route('admin.cms.posts.index')->with('success', 'Post updated successfully.');
     }
 
     public function destroy(Post $post)
     {
         $post->delete();
-        return redirect()->route('admin.posts.index')->with('success', 'Post deleted successfully.');
+        return redirect()->route('admin.cms.posts.index')->with('success', 'Post deleted successfully.');
     }
 }

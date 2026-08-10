@@ -9,8 +9,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -27,8 +26,14 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
+        $credentials['is_active'] = true;
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            Log::notice('Authentication succeeded.', [
+                'user_id' => Auth::id(),
+                'ip_hash' => hash('sha256', (string) $request->ip()),
+            ]);
 
             /** @var User $user */
             $user = Auth::user();
@@ -39,10 +44,15 @@ class LoginController extends Controller
                 'cms_editor' => redirect()->intended(route('admin.cms.posts.index')),
                 'email_manager' => redirect()->intended(route('admin.email.campaigns.index')),
                 'hr_manager' => redirect()->intended(route('admin.hrm.employees.index')),
-                'employee' => redirect()->intended(route('admin.hrm.attendances.index')),
+                'employee' => redirect()->intended(route('admin.hrm.employees.index')),
                 default => redirect()->intended(route('admin.dashboard')),
             };
         }
+
+        Log::warning('Authentication failed.', [
+            'identity_hash' => hash('sha256', strtolower((string) $request->input('email'))),
+            'ip_hash' => hash('sha256', (string) $request->ip()),
+        ]);
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',

@@ -12,7 +12,7 @@
         </div>
         @foreach($tabs as $index => $tab)
             <div x-show="tab === {{ $index }}" x-transition class="p-6 bg-gray-50 rounded-lg">
-                {!! $tab['content'] ?? '' !!}
+                {!! nl2br(e($tab['content'] ?? '')) !!}
             </div>
         @endforeach
     </div>

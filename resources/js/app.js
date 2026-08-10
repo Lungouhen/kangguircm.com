@@ -1,6 +1,11 @@
+import Alpine from 'alpinejs';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 /**
  * KangGui RCM SaaS Platform - Main JavaScript Entry Point
  */
+window.Alpine = Alpine;
 
 // Mobile sidebar toggle
 function toggleSidebar() {
@@ -27,4 +32,8 @@ document.addEventListener('click', function(event) {
     }
 });
 
-console.log('KangGui RCM initialized');
+Alpine.start();
+
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    AOS.init({ duration: 600, once: true, offset: 40 });
+}

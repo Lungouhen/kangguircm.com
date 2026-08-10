@@ -4,19 +4,30 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Post;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UpdatePostRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasPermission('posts.update');
+        return $this->user()?->hasPermission('posts.edit') ?? false;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'slug' => Str::slug($this->input('slug') ?: $this->input('title', '')),
+            'noindex' => $this->boolean('noindex'),
+        ]);
     }
 
     public function rules(): array
     {
-        $postId = $this->route('post')->id ?? $this->route('post');
+        $routePost = $this->route('post');
+        $postId = $routePost instanceof Post ? $routePost->id : $routePost;
 
         return [
             'title' => ['required', 'string', 'max:255'],
@@ -28,6 +39,8 @@ class UpdatePostRequest extends FormRequest
             'featured_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'meta_title' => ['nullable', 'string', 'max:60'],
             'meta_description' => ['nullable', 'string', 'max:160'],
+            'canonical_url' => ['nullable', 'url', 'max:500'],
+            'noindex' => ['nullable', 'boolean'],
         ];
     }
 }
